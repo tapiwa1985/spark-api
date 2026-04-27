@@ -5,6 +5,11 @@ namespace App\Repositories;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Interface BaseRepositoryInterface
+ *
+ * @package App\Repositories
+ */
 interface BaseRepositoryInterface
 {
     /**

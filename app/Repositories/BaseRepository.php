@@ -5,6 +5,11 @@ namespace App\Repositories;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class BaseRepository
+ * 
+ * @package App\Repositories
+ */
 class BaseRepository implements BaseRepositoryInterface
 {
     protected Model $model;
