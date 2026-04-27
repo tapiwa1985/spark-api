@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bind the UserProfileRepositoryInterface to the UserProfileRepository implementation
+        $this->app->bind(
+            \App\Repositories\Contracts\UserProfileRepositoryInterface::class,
+            \App\Repositories\UserProfileRepository::class
+        );
     }
 
     /**
