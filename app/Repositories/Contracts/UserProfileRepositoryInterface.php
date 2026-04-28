@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
-use App\Repositories\BaseRepositoryInterface;
+use App\Repositories\Contracts\BaseRepositoryInterface;
 
 /**
  * Interface UserProfileRepositoryInterface

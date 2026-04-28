@@ -4,10 +4,11 @@ namespace App\Repositories;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use App\Repositories\Contracts\BaseRepositoryInterface;
 
 /**
  * Class BaseRepository
- * 
+ *
  * @package App\Repositories
  */
 class BaseRepository implements BaseRepositoryInterface
