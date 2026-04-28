@@ -29,12 +29,14 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUserProfileData = [
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
+            'gender' => 'male',
         ];
 
         $mockUserProfile = Mockery::mock(UserProfile::class)->makePartial();
         $mockUserProfile->user = $mockUser;
         $mockUserProfile->bio = $mockUserProfileData['bio'];
         $mockUserProfile->dob = $mockUserProfileData['dob'];
+        $mockUserProfile->gender = $mockUserProfileData['gender'];
 
         $userRepoMock = $this->mock(UserRepositoryInterface::class,
             function($mock) use($mockUserData, $mockUser) {
@@ -52,6 +54,7 @@ class UserProfileServiceUnitTest extends TestCase
                     'user_id' => $mockUser->id,
                     'bio' => $mockUserProfileData['bio'],
                     'dob' => $mockUserProfileData['dob'],
+                    'gender' => $mockUserProfileData['gender'],
                 ])
                 ->andReturn($mockUserProfile);
             });
@@ -64,6 +67,7 @@ class UserProfileServiceUnitTest extends TestCase
         $this->assertInstanceOf(UserProfile::class, $result);
         $this->assertEquals($result->bio, $mockUserProfileData['bio']);
         $this->assertEquals($result->dob, $mockUserProfileData['dob']);
+        $this->assertEquals($result->gender, $mockUserProfileData['gender']);
         $this->assertInstanceOf(User::class, $result->user);
         $this->assertEquals($result->user->name, $mockUserData['name']);
         $this->assertEquals($result->user->email, $mockUserData['email']);

@@ -54,6 +54,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
                 'user_id' => $user->id,
                 'bio' => $data['bio'],
                 'dob' => $data['dob'],
+                'gender' => $data['gender'],
             ]);
         });
     }
