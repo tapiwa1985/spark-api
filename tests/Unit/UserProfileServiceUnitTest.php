@@ -49,17 +49,20 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUserProfile->gender = $mockUserProfileData['gender'];
 
         // Expect one user creation call with exactly the arranged user payload.
-        $userRepoMock = $this->mock(UserRepositoryInterface::class,
-            function($mock) use($mockUserData, $mockUser) {
+        $userRepoMock = $this->mock(
+            UserRepositoryInterface::class,
+            function ($mock) use ($mockUserData, $mockUser) {
                 $mock->shouldReceive('create')
                 ->once()
                 ->with($mockUserData)
                 ->andReturn($mockUser);
-            });
-        
+            }
+        );
+
         // Expect one profile creation call that uses the created user id.
-        $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class,
-            function($mock) use($mockUserProfileData, $mockUserProfile, $mockUser) {
+        $userProfileRepoMock = $this->mock(
+            UserProfileRepositoryInterface::class,
+            function ($mock) use ($mockUserProfileData, $mockUserProfile, $mockUser) {
                 $mock->shouldReceive('create')
                 ->once()
                 ->with([
@@ -69,8 +72,9 @@ class UserProfileServiceUnitTest extends TestCase
                     'gender' => $mockUserProfileData['gender'],
                 ])
                 ->andReturn($mockUserProfile);
-            });
-        
+            }
+        );
+
         // Act: instantiate the service and create a profile through it.
         $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
 

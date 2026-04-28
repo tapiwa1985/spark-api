@@ -33,7 +33,7 @@ class UserProfileRepositoryTest extends TestCase
      * It creates a profile linked to an existing user.
      */
     public function testCreateUserProfile()
-    { 
+    {
         // Create a parent user because profile has a user_id foreign key.
         $user = User::factory()->create();
 

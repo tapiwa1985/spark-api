@@ -25,7 +25,7 @@ class RegistrationRequest extends ApiRequest
                 ->symbols()
                 ->mixedCase()
             ],
-            'bio' => ['required', 'string'],
+            'bio' => ['required', 'string', 'max:255'],
             'dob' => ['
                 required',
                 'date',
