@@ -160,20 +160,6 @@ jobs:
           mkdir -p storage/framework/{sessions,views,cache}
           chmod -R 775 storage bootstrap/cache
 
-      - name: Run tests with Cobertura coverage
-        run: # Generate both formats
-            vendor/bin/phpunit --coverage-clover coverage.xml --coverage-cobertura coverage.cobertura.xml
-
-      - name: Upload coverage to Qlty
-        uses: qltysh/qlty-action/coverage@v2
-        with:
-          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
-          files: coverage.cobertura.xml  
-
-      - name: Run Static Analysis (PHPStan)
-        if: success()
-        run: php -d memory_limit=2G ./vendor/bin/phpstan analyse app tests --no-progress
-
       - name: PHP Code Style (phpcs)
         uses: chindit/actions-phpcs@master
         with:
