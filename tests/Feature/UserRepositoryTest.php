@@ -20,7 +20,7 @@ class UserRepositoryTest extends TestCase
     /**
      * It resolves repository dependencies before each test.
      */
-    public function setUp(): void 
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -48,7 +48,7 @@ class UserRepositoryTest extends TestCase
             'name' => $userData['name'],
             'email' => $userData['email']
         ]);
-        
+
         // Assert the repository returns the expected model instance and values.
         $this->assertInstanceOf(User::class, $result);
         $this->assertEquals($result->name, $userData['name']);
@@ -68,6 +68,20 @@ class UserRepositoryTest extends TestCase
         // Verify the repository returns the correct model data.
         $this->assertInstanceOf(User::class, $result);
         $this->assertEquals($result->id, $user->id);
+        $this->assertEquals($result->name, $user->name);
+    }
+
+    public function testGetUserByEmail()
+    {
+        // Seed a user and fetch it through the repository contract.
+        $user = User::factory()->create();
+
+        $result = $this->_userRepository->findByEmail($user->email);
+
+        // Verify the repository returns the correct model data.
+        $this->assertInstanceOf(User::class, $result);
+        $this->assertEquals($result->id, $user->id);
+        $this->assertEquals($result->email, $user->email);
         $this->assertEquals($result->name, $user->name);
     }
 }

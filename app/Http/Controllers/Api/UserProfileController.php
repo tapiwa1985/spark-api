@@ -9,7 +9,7 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserProfileController extends Controller
 {
@@ -39,8 +39,11 @@ class UserProfileController extends Controller
         $userProfile = $this->_userProfileService->create($data);
         $token = JWTAuth::fromUser($userProfile->user);
 
-        return (new UserProfileResource($userProfile))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
+        return response()->json([
+            'data' => new UserProfileResource($userProfile),
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ], Response::HTTP_CREATED);
     }
 }
