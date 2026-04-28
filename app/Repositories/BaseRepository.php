@@ -39,7 +39,7 @@ class BaseRepository implements BaseRepositoryInterface
      * @param int $id
      * @return Model
      */
-    public function find($id): Model
+    public function find(int $id): Model
     {
         return $this->model->findOrFail($id);
     }
@@ -60,7 +60,7 @@ class BaseRepository implements BaseRepositoryInterface
      * @param array $data
      * @return Model|null
      */
-    public function update($id, array $data): ?Model
+    public function update(int $id, array $data): ?Model
     {
         $record = $this->find($id);
         if ($record) {
@@ -76,7 +76,7 @@ class BaseRepository implements BaseRepositoryInterface
      * @param int $id
      * @return bool
      */
-    public function delete($id)
+    public function delete(int $id)
     {
         $record = $this->find($id);
         if ($record) {

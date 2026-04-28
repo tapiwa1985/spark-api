@@ -24,7 +24,7 @@ interface BaseRepositoryInterface
      * @param int $id
      * @return Model
      */
-    public function find($id): Model;
+    public function find(int $id): Model;
 
     /**
      * Create a new record in the repository.
@@ -39,12 +39,12 @@ interface BaseRepositoryInterface
      * @param array $data
      * @return Model|null
      */
-    public function update($id, array $data): ?Model;
+    public function update(int $id, array $data): ?Model;
 
     /**
      * Delete a record from the repository.
      * @param int $id
      * @return bool
      */
-    public function delete($id);
+    public function delete(int $id);
 }

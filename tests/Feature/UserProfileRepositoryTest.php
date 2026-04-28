@@ -13,13 +13,13 @@ class UserProfileRepositoryTest extends TestCase
 {
     use RefreshDatabase;
 
-    private UserProfileRepositoryInterface $userProfileRepository;
+    private UserProfileRepositoryInterface $_userProfileRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->userProfileRepository = app()->make(UserProfileRepositoryInterface::class);
+        $this->_userProfileRepository = app()->make(UserProfileRepositoryInterface::class);
     }
 
     /**
@@ -39,7 +39,7 @@ class UserProfileRepositoryTest extends TestCase
             'gender' => 'male'
         ];
 
-        $userProfile = $this->userProfileRepository->create($userProfileData);
+        $userProfile = $this->_userProfileRepository->create($userProfileData);
 
         // Assert that the user profile was created successfully
         $this->assertNotNull($userProfile);
