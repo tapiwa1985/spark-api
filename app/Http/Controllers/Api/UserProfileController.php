@@ -11,6 +11,14 @@ use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Controller responsible for handling user profile creation and management.
+ * This controller relies on a user profile service to handle the business logic of creating and managing user profiles. 
+ * The store method validates the incoming registration request, creates a new user profile using the service, generates 
+ * a JWT token for the newly created user, and returns a JSON response containing the user profile data and authentication token.
+ * 
+ * @package App\Http\Controllers\Api
+ */
 class UserProfileController extends Controller
 {
     /**
