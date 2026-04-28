@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use Carbon\Carbon;
 
 /**
  * Feature tests for the user registration/profile API endpoint.
@@ -23,9 +24,9 @@ class UserProfileControllerTest extends TestCase
         $request = [
             'name' => fake()->name(),
             'email' => fake()->email(),
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
-            'dob' => fake()->date(),
+            'dob' => '1990-12-12',
             'gender' => 'male',
         ];
 
@@ -269,6 +270,172 @@ class UserProfileControllerTest extends TestCase
                 'errors' => [
                     'password' => [
                         'The password field must contain at least one uppercase and one lowercase letter.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenBioIsEmptyAssertUnprocessable()
+    {
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => '',
+            'dob' => fake()->date(),
+            'gender' => 'male',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'bio' => [
+                        'The bio field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenDobIsEmptyAssertUnprocessable()
+    {
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '',
+            'gender' => 'male',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'dob' => [
+                        'The dob field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenDobIsNotValidDateAssertUnprocessable()
+    {
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => fake()->word(),
+            'gender' => 'male',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'dob' => [
+                        'The dob field must be a valid date.'
+                    ]
+                ]
+            ]);
+    }
+
+
+    public function testWhenDobIsFutureDateAssertUnprocessable()
+    {
+        $futureDate = Carbon::now()->addDays(10)->format('Y-m-d');
+
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => $futureDate,
+            'gender' => 'male',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'dob' => [
+                        'The dob field must be a date before today.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenUserIsBelowLegalAgeAssertUnprocessable()
+    {
+        $dob = Carbon::now()->subDays(17)->format('Y-m-d');
+
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => $dob,
+            'gender' => 'male',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'dob' => [
+                        'The dob field must be a date before ' . Carbon::now()->subYears(18)->format('Y-m-d') . '.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenGenderIsEmptyAssertUnprocessable()
+    {
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => '',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'gender' => [
+                        'The gender field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenGenderIsNotValidAssertUnprocessable()
+    {
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' =>  'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => 'invalid',
+        ];
+
+        // Verify Laravel returns a validation error for the missing password.
+        $this->postJson('/api/v1/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'gender' => [
+                        'The selected gender is invalid.'
                     ]
                 ]
             ]);

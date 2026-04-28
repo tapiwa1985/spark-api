@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules\Date;
+use Carbon\Carbon;
 
 class RegistrationRequest extends ApiRequest
 {
@@ -23,6 +25,14 @@ class RegistrationRequest extends ApiRequest
                 ->symbols()
                 ->mixedCase()
             ],
+            'bio' => ['required', 'string'],
+            'dob' => ['
+                required',
+                'date',
+                (new Date())->beforeToday(),
+                'before:' . Carbon::now()->subYears(18)->format('Y-m-d'),
+            ],
+            'gender' => ['required', 'in:male,female'],
         ];
     }
 }
