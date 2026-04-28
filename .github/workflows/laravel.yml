@@ -111,7 +111,7 @@ jobs:
           php artisan key:generate --force
 
           # Generate JWT secret key
-          php artisan jwt:secret --force
+          # php artisan jwt:secret --force
 
           # Verify .env
           echo "=== Generated .env ==="
