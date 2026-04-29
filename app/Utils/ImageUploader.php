@@ -3,11 +3,10 @@
 namespace App\Utils;
 
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\File;
 use App\Utils\Contracts\ImageUploaderInterface;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ImageUploader implements ImageUploaderInterface
 {
@@ -15,22 +14,24 @@ class ImageUploader implements ImageUploaderInterface
      * @param File
      * @return string|null
      */
-    public function uploadImage(File $file): ?string
+    public function uploadImage($file): ?string
     {
-        $manager = new ImageManager(new Driver());
+        $image = Image::decode($file)
+            ->cover(500, 500);
 
-        $image = $manager->read($file->getPathname());
+        $extension = $file->extension();
 
-        $image->scale(width:800);
+        $filename = 'profiles/' . Str::uuid() . '.' . $extension;
 
-        $encodedImage = $image->toJpeg(85);
+        $tempFilePath = storage_path("temp/{$filename}");
+        File::ensureDirectoryExists(dirname($tempFilePath));
 
-        $filename = 'images/' . Str::uuid() . '.jpg';
+        $image->save($tempFilePath);
 
-        $uploaded = Storage::disk('gcs')->put($filename, (string) $encodedImage);
+        $uploaded = Storage::disk('gcs')->put($filename, file_get_contents($tempFilePath));
 
         if ($uploaded) {
-            return Storage::disk('gcs')->url($filename);
+            return $filename;
         }
 
         return null;

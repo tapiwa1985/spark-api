@@ -42,4 +42,13 @@ class ProfileImageRepositoryTest extends TestCase
         $this->assertEquals($result->user_profile_id, $profileImageData['user_profile_id']);
         $this->assertEquals($result->caption, $profileImageData['caption']);
     }
+
+    public function testDeleteProfileImage()
+    {
+        $profileImage = ProfileImage::factory()->create();
+
+        $this->_profileImageRepository->delete($profileImage->id);
+
+        $this->assertSoftDeleted($profileImage);
+    }
 }

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ProfileImage;
+use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,11 @@ class ProfileImageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'image_url' => fake()->url(),
+            'display_order' => rand(0,5),
+            'is_display' => true,
+            'user_profile_id' => UserProfile::factory()->create(),
+            'caption' => fake()->sentence,
         ];
     }
 }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('caption')->nullable();
             $table->string('metadata')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

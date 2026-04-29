@@ -10,5 +10,5 @@ interface ImageUploaderInterface
      * @param File
      * @return string|null
      */
-    public function uploadImage(File $file): ?string;
+    public function uploadImage($file): ?string;
 }

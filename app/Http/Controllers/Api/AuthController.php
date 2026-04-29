@@ -13,7 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Controller responsible for handling user authentication, including login and token generation.
  * This controller uses JWT for authentication and relies on a user service to retrieve user information.
- * The login method validates the incoming request, attempts to authenticate the user, and returns a JSON response containing the JWT token and user information if successful. If authentication fails, it returns an unauthorized error response.
+ * The login method validates the incoming request, attempts to authenticate the user, and returns a JSON
+ * response containing the JWT token and user information if successful. If authentication fails,
+ * it returns an unauthorized error response.
+ *
  * @package App\Http\Controllers\Api
  */
 class AuthController extends Controller
