@@ -36,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\ProfileImageRepositoryInterface::class,
             \App\Repositories\ProfileImageRepository::class,
         );
+
+        $this->app->bind(
+            \App\Utils\Contracts\ImageUploaderInterface::class,
+            \App\Utils\ImageUploader::class,
+        );
     }
 
     /**
