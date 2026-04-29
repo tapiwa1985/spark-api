@@ -21,7 +21,7 @@ class ImageUploader implements ImageUploaderInterface
 
         $image->scale(width:800);
 
-        encodedImage = $image->toJpeg(85);
+        $encodedImage = $image->toJpeg(85);
 
         $filename = 'images/' . Str::uuid() . '.jpg';
 
@@ -31,6 +31,6 @@ class ImageUploader implements ImageUploaderInterface
             return Storage::disk('gcs')->url($filename);
         }
 
-        return null
+        return null;
     }
 }
