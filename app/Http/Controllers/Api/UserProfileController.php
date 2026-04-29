@@ -9,7 +9,6 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * Controller responsible for handling user profile creation and management.
@@ -45,7 +44,7 @@ class UserProfileController extends Controller
         $data = $request->only('name', 'email', 'password', 'bio', 'dob', 'gender');
 
         $userProfile = $this->_userProfileService->create($data);
-        $token = JWTAuth::fromUser($userProfile->user);
+        $token = auth()->login($userProfile->user);
 
         return response()->json([
             'data' => new UserProfileResource($userProfile),

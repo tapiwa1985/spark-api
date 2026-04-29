@@ -68,4 +68,21 @@ class UserProfileRepositoryTest extends TestCase
             'gender' => $userProfileData['gender'],
         ]);
     }
+
+    public function testGetUserProfileByEmail()
+    {
+        $userProfile = UserProfile::factory()->create();
+
+        $result = $this->_userProfileRepository->findByEmail($userProfile->user->email);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(UserProfile::class, $result);
+        $this->assertInstanceOf(User::class, $result->user);
+        $this->assertEquals($result->bio, $userProfile->bio);
+        $this->assertEquals($result->dob, $result->dob);
+        $this->assertEquals($result->gender, $result->gender);
+        $this->assertEquals($result->user->id, $userProfile->user->id);
+        $this->assertEquals($userProfile->user->name, $userProfile->user->name);
+        $this->assertEquals($userProfile->user->email, $userProfile->user->email);
+    }
 }

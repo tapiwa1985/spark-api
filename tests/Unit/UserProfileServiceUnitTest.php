@@ -90,4 +90,44 @@ class UserProfileServiceUnitTest extends TestCase
         $this->assertEquals($result->user->name, $mockUserData['name']);
         $this->assertEquals($result->user->email, $mockUserData['email']);
     }
+
+    public function testGetUserProfileByEmail()
+    {
+        $mockUser = Mockery::mock(User::class)->makePartial();
+        $mockUser->name = fake()->name();
+        $mockUser->email = fake()->email();
+        $mockUser->id = 1;
+
+        $userRepoMock = Mockery::mock(UserRepositoryInterface::class);
+
+        $mockUserProfile = Mockery::mock(UserProfile::class)->makePartial();
+        $mockUserProfile->user = $mockUser;
+        $mockUserProfile->bio = fake()->sentence();
+        $mockUserProfile->dob = fake()->date();
+        $mockUserProfile->gender = 'male';
+
+        $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class, 
+            function($mock) use($mockUser, $mockUserProfile) {
+                $mock->shouldReceive('findByEmail')
+                ->once()
+                ->with($mockUser->email)
+                ->andReturn($mockUserProfile);
+            });
+
+        $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
+
+        $result = $service->fetchByEmail($mockUser->email);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(UserProfile::class, $result);
+        $this->assertInstanceOf(User::class, $result->user);
+
+        $this->assertEquals($result->bio, $mockUserProfile->bio);
+        $this->assertEquals($result->dob, $mockUserProfile->dob);
+        $this->assertEquals($result->gender, $mockUserProfile->gender);
+
+        $this->assertEquals($result->user->id, $mockUser->id);
+        $this->assertEquals($result->user->email, $mockUser->email);
+        $this->assertEquals($result->user->name, $mockUser->name);
+    }
 }

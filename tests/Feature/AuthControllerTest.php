@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\UserProfile;
 
 class AuthControllerTest extends TestCase
 {
@@ -20,6 +21,10 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
+        UserProfile::factory()->create([
+            'user_id' => $user->id
+        ]);
+
         $response = $this->postJson('/api/v1/login', [
             'email' => $user->email,
             'password' => 'password',
@@ -30,6 +35,17 @@ class AuthControllerTest extends TestCase
                      'token',
                      'token_type',
                      'expires_in',
+                     'user_profile' => [
+                        'id',
+                        'bio',
+                        'dob',
+                        'gender',
+                        'user' => [
+                            'id',
+                            'name',
+                            'email',
+                        ],
+                     ]
         ]);
     }
 

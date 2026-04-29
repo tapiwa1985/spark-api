@@ -20,4 +20,18 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
     {
         parent::__construct($model);
     }
+
+    /**
+     * @param string $email
+     * @return Model|null
+     */
+    public function findByEmail(string $email): ?UserProfile
+    {
+        return $this->model
+            ->whereHas('user', function ($query) use ($email) {
+                $query->where('email', $email);
+            })
+            ->with('user')
+            ->first();
+    }
 }

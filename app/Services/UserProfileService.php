@@ -58,4 +58,15 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
             ]);
         });
     }
+
+    /**
+     * Get a profile by user email.
+     *
+     * @param string $email
+     * @return UserProfile|null
+     */
+    public function fetchByEmail(string $email): ?UserProfile
+    {
+        return $this->userProfileRepo->findByEmail($email);
+    }
 }
