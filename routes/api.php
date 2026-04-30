@@ -13,7 +13,7 @@ Route::prefix('v1')->group(function() {
         Route::post('login', [AuthController::class, 'login']);
         Route::prefix('linkedin')->group(function() {
             Route::get('/', [LinkedInController::class, 'getRedirectUrl']);
-            Route::get('callback', [LinkedInController::class, 'callback']);
+            Route::match(['GET', 'POST'], 'callback', [LinkedInController::class, 'callback']);
         });
     });
 

@@ -48,6 +48,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function findByLinkedInId(string $linkedinId): ?Model
     {
-        return $this->model->where('linkedin_id', $linkedinId)->first();
+        return $this->model->with('userProfile')->where('linkedin_id', $linkedinId)->first();
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Models\User;
+use App\Models\UserProfile;
 
 /**
  * Feature tests for user repository behavior.
@@ -15,6 +16,11 @@ class UserRepositoryTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @var UserRepositoryInterface $_userRepository 
+     * 
+     * The repository instance under test.
+     */
     private UserRepositoryInterface $_userRepository;
 
     /**
@@ -120,13 +126,21 @@ class UserRepositoryTest extends TestCase
             'linkedin_id' => fake()->uuid(),
         ]);
 
+        UserProfile::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
         $result = $this->_userRepository->findByLinkedInId($user->linkedin_id);
 
         // Verify the repository returns the correct model data.
         $this->assertInstanceOf(User::class, $result);
+        $this->assertInstanceOf(UserProfile::class, $result->userProfile);
+
         $this->assertEquals($result->id, $user->id);
         $this->assertEquals($result->linkedin_id, $user->linkedin_id);
         $this->assertEquals($result->email, $user->email);
         $this->assertEquals($result->name, $user->name);
+
+        $this->assertEquals($result->userProfile->user_id, $user->id);
     }
 }

@@ -59,7 +59,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
 
             return parent::create([
                 'user_id' => $user->id,
-                'dob' => $data['dob'],
+                'dob' => $data['dob'] ?? null,
             ]);
         });
     }
