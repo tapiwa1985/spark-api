@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\RegistrationRequest;
 use App\Services\Contracts\UserProfileServiceInterface;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserProfileResource;
@@ -34,25 +33,6 @@ class UserProfileController extends Controller
     public function __construct(UserProfileServiceInterface $userProfileService)
     {
         $this->_userProfileService = $userProfileService;
-    }
-
-    /**
-     * @param RegistrationRequest $request
-     * @return JsonResponse
-     */
-    public function store(RegistrationRequest $request): JsonResponse
-    {
-        $data = $request->only('name', 'email', 'password', 'bio', 'dob', 'gender');
-
-        $userProfile = $this->_userProfileService->create($data);
-        $token = auth()->login($userProfile->user);
-
-        return response()->json([
-            'data' => new UserProfileResource($userProfile),
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ], Response::HTTP_CREATED);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use App\Http\Resources\UserProfileResource;
 use App\Http\Requests\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\RegistrationRequest;
 
 /**
  * Controller responsible for handling user authentication, including login and token generation.
@@ -35,6 +36,25 @@ class AuthController extends Controller
     public function __construct(UserProfileServiceInterface $userProfileService)
     {
         $this->_userProfileService = $userProfileService;
+    }
+
+    /**
+     * @param RegistrationRequest $request
+     * @return JsonResponse
+     */
+    public function register(RegistrationRequest $request): JsonResponse
+    {
+        $data = $request->only('name', 'email', 'password', 'bio', 'dob', 'gender');
+
+        $userProfile = $this->_userProfileService->create($data);
+        $token = auth()->login($userProfile->user);
+
+        return response()->json([
+            'data' => new UserProfileResource($userProfile),
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ], Response::HTTP_CREATED);
     }
 
     /**
