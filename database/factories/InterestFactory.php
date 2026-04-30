@@ -19,7 +19,7 @@ class InterestFactory extends Factory
     public function definition(): array
     {
         return [
-            'iterest_name' => fake()->lexify('??? ???'),
+            'interest_name' => fake()->lexify('??? ???'),
             'interest_category_id' => InterestCategory::factory()->create(),
         ];
     }

@@ -9,11 +9,15 @@ use App\Repositories\Contracts\UserProfileRepositoryInterface;
 use App\Services\Contracts\UserProfileServiceInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
+/**
+ * Class UserProfileService
+ * @package App\Services
+ */
 class UserProfileService extends BaseService implements UserProfileServiceInterface
 {
     /**
      * @var UserRepositoryInterface $userRepo
-     */ 
+     */
     protected UserRepositoryInterface $userRepo;
 
     /**

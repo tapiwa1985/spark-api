@@ -19,11 +19,13 @@ class RegistrationRequest extends ApiRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required',
-            Password::min(8)
-                ->numbers()
-                ->symbols()
-                ->mixedCase()
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->numbers()
+                    ->symbols()
+                    ->mixedCase()
             ],
             'bio' => ['required', 'string', 'max:255'],
             'dob' => ['

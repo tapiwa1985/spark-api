@@ -12,8 +12,9 @@ Route::prefix('v1')->group(function() {
         Route::post('login', [AuthController::class, 'login']);
     });
 
+    Route::get('industries', [IndustryController::class, 'index']);
+
     Route::middleware(['auth'])->group(function() {
-        Route::get('industries', [IndustryController::class, 'index']);
         Route::put('user-profiles/{userProfileId}', [UserProfileController::class, 'update']);
     });
 });

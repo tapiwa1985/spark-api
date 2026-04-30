@@ -135,6 +135,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'male',
@@ -172,7 +173,8 @@ class AuthControllerTest extends TestCase
         $request = [
             'name' => '',
             'email' => fake()->email(),
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -190,13 +192,43 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
+    public function testWhenPasswordsDoNotMatchAssertUnprocessable()
+    {
+        $industry = Industry::factory()->create();
+
+        // Name is required, so this payload should fail validation.
+        $request = [
+            'name' =>  fake()->name(),
+            'email' => fake()->email(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'DifferentP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => 'male',
+            'industry_id' => $industry->id,
+            'job_title' => fake()->jobTitle(),
+        ];
+
+        // Verify Laravel returns a validation error for the missing name.
+        $this->postJson('/api/v1/auth/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'password' => [
+                        'The password field confirmation does not match.'
+                    ]
+                ]
+            ]);
+    }
+
     public function testWhenJobTitleIsEmptyAssertUnprocessable()
     {
         // Name is required, so this payload should fail validation.
         $request = [
             'name' => fake()->name(),
             'email' => fake()->email(),
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -221,7 +253,8 @@ class AuthControllerTest extends TestCase
         $request = [
             'name' => fake()->name(),
             'email' => fake()->email(),
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'male',
@@ -247,6 +280,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'male',
@@ -273,6 +307,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'male',
@@ -301,7 +336,9 @@ class AuthControllerTest extends TestCase
         $request = [
             'name' => fake()->name(),
             'email' => '',
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
+            
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -328,9 +365,10 @@ class AuthControllerTest extends TestCase
         $request = [
             'name' => fake()->name(),
             'email' => fake()->word(),
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
-            'dob' => fake()->date(),
+            'dob' => '1990-12-12',
             'gender' => 'male',
         ];
 
@@ -357,9 +395,10 @@ class AuthControllerTest extends TestCase
         $request = [
             'name' => fake()->name(),
             'email' => $user->email,
-            'password' => fake()->password(),
+            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
-            'dob' => fake()->date(),
+            'dob' => '1990-12-12',
             'gender' => 'male',
         ];
 
@@ -385,6 +424,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  '',
+            'password_confirmation' => '',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -408,6 +448,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'pass1@L',
+            'password_confirmation' => 'pass1@L',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -431,6 +472,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword',
+            'password_confirmation' => 'StrongP@ssword',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -454,6 +496,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP1ssword',
+            'password_confirmation' => 'StrongP1ssword',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -477,6 +520,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'strongp@ssword',
+            'password_confirmation' => 'strongp@ssword',
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -500,6 +544,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => '',
             'dob' => fake()->date(),
             'gender' => 'male',
@@ -523,6 +568,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '',
             'gender' => 'male',
@@ -546,6 +592,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => fake()->word(),
             'gender' => 'male',
@@ -572,6 +619,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => $futureDate,
             'gender' => 'male',
@@ -597,6 +645,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => $dob,
             'gender' => 'male',
@@ -620,6 +669,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => '',
@@ -643,6 +693,7 @@ class AuthControllerTest extends TestCase
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' =>  'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'invalid',

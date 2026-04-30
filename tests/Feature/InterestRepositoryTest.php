@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Interest;
 use App\Models\InterestCategory;
+use Illuminate\Support\Collection;
 use App\Repositories\Contracts\InterestRepositoryInterface;
 
 class InterestRepositoryTest extends TestCase
@@ -29,7 +30,7 @@ class InterestRepositoryTest extends TestCase
     {
         $interestCategory = InterestCategory::factory()->create();
 
-        $interests = Interest::factory(5)->ceate([
+        $interests = Interest::factory(5)->create([
             'interest_category_id' => $interestCategory->id,
         ]);
 
