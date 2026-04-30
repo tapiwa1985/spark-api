@@ -24,6 +24,7 @@ class AuthController extends Controller
 {
     /**
      * The user profile service instance.
+     * 
      * @var UserProfileServiceInterface
      */
     private UserProfileServiceInterface $_userProfileService;
