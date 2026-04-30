@@ -130,4 +130,71 @@ class UserProfileServiceUnitTest extends TestCase
         $this->assertEquals($result->user->email, $mockUser->email);
         $this->assertEquals($result->user->name, $mockUser->name);
     }
+
+    public function testUpdateUserProfile()
+    {
+        $mockUser = $this->createMockUser();
+
+        $userRepoMock = $this->mock(UserRepositoryInterface::class);
+        $mockUserProfile = $this->createMockUserProfile($mockUser);
+
+        $mockUserProfileData = [
+            'bio' => fake()->paragraph,
+            'dob' => fake()->date(),
+            'gender' => 'male'
+        ];
+
+        $expected = Mockery::mock(UserProfile::class)->makePartial();
+        $expected->user = $mockUser;
+        $expected->bio = $mockUserProfileData['bio'];
+        $expected->dob = $mockUserProfileData['dob'];
+        $expected->gender = $mockUserProfileData['gender'];
+        $expected->id = $mockUserProfile->id;
+
+        $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class, 
+            function($mock) use ($mockUser, $mockUserProfile, $mockUserProfileData, $expected) {
+                $mock->shouldReceive('update')
+                ->once()
+                ->with($mockUserProfile->id, $mockUserProfileData)
+                ->andReturn($expected);
+            });
+
+        $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
+
+        $result = $service->update($mockUserProfile->id, $mockUserProfileData);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(UserProfile::class, $result);
+        $this->assertInstanceOf(User::class, $result->user);
+
+        $this->assertEquals($result->bio, $mockUserProfileData['bio']);
+        $this->assertEquals($result->dob, $mockUserProfileData['dob']);
+        $this->assertEquals($result->gender, $mockUserProfileData['gender']);
+
+        $this->assertEquals($result->user->id, $mockUser->id);
+        $this->assertEquals($result->user->email, $mockUser->email);
+        $this->assertEquals($result->user->name, $mockUser->name);
+    }
+
+    private function createMockUser()
+    {
+        $mockUser = Mockery::mock(User::class)->makePartial();
+        $mockUser->name = fake()->name();
+        $mockUser->email = fake()->email();
+        $mockUser->id = 1;
+
+        return $mockUser;
+    }
+
+    private function createMockUserProfile($mockUser)
+    {
+        $mockUserProfile = Mockery::mock(UserProfile::class)->makePartial();
+        $mockUserProfile->user = $mockUser;
+        $mockUserProfile->bio = fake()->sentence();
+        $mockUserProfile->dob = fake()->date();
+        $mockUserProfile->gender = 'male';
+        $mockUserProfile->id = rand(1, 100);
+
+        return $mockUserProfile;
+    }
 }

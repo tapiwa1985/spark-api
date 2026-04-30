@@ -85,4 +85,43 @@ class UserProfileRepositoryTest extends TestCase
         $this->assertEquals($userProfile->user->name, $userProfile->user->name);
         $this->assertEquals($userProfile->user->email, $userProfile->user->email);
     }
+
+    /**
+     * Tests update user profile details
+     * 
+     * @return void
+     */
+    public function testUpdateUserProfile()
+    {
+        $userProfile = UserProfile::factory()->create();
+
+        $userProfileData = [
+            'bio' => fake()->paragraph,
+            'dob' => fake()->date(),
+            'gender' => 'male'
+        ];
+
+        $result = $this->_userProfileRepository->update($userProfile->id, $userProfileData);
+
+        $this->assertNotNull($userProfile);
+
+        $this->assertInstanceOf(UserProfile::class, $userProfile);
+        $this->assertInstanceOf(User::class, $userProfile->user);
+
+        $this->assertEquals($userProfileData['bio'], $result->bio);
+        $this->assertEquals($userProfileData['dob'], $result->dob);
+        $this->assertEquals($userProfileData['gender'], $result->gender);
+        $this->assertEquals($userProfile->user->id, $result->user->id);
+        $this->assertEquals($userProfile->user->name, $result->user->name);
+        $this->assertEquals($userProfile->user->email, $result->user->email);
+
+        // Assert the record exists in persistent storage.
+        $this->assertDatabaseHas('user_profiles', [
+            'id' => $userProfile->id,
+            'user_id' => $userProfile->user->id,
+            'bio' => $userProfileData['bio'],
+            'dob' => $userProfileData['dob'],
+            'gender' => $userProfileData['gender'],
+        ]);
+    }
 }

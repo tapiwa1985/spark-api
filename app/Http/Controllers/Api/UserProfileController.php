@@ -53,4 +53,13 @@ class UserProfileController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ], Response::HTTP_CREATED);
     }
+
+    public function update(string $userProfileId, Request $request): UserProfileResource
+    {
+        $data = $request->only('bio', 'dob', 'gender');
+
+        $userProfile = $this->_userProfileService->update((int)$userProfileId, $data);
+
+        return new UserProfileResource($userProfile);
+    }
 }
