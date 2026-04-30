@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Repositories;
 
@@ -15,7 +15,7 @@ class IndustryRepository extends BaseRepository implements IndustryRepositoryInt
 
     /**
      * IndustryRepository constructor.
-     * 
+     *
      * @param Industry
      */
     public function __construct(Industry $model)

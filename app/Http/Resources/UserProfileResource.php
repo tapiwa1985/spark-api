@@ -19,9 +19,11 @@ class UserProfileResource extends JsonResource
             'bio' => $this->bio,
             'dob' => (string)$this->dob,
             'gender' => $this->gender,
+            'job_title' => $this->job_title,
             'created_at' => (string)$this->created_at,
             'updated_at' => (string)$this->updated_at,
             'user' => new UserResource($this->user),
+            'industry' => new IndustryResource($this->industry),
         ];
     }
 }

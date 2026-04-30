@@ -13,7 +13,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
 {
     /**
      * @var UserRepositoryInterface $userRepo
-     */
+     */ 
     protected UserRepositoryInterface $userRepo;
 
     /**
@@ -55,6 +55,8 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
                 'bio' => $data['bio'],
                 'dob' => $data['dob'],
                 'gender' => $data['gender'],
+                'job_title' => $data['job_title'],
+                'industry_id' => $data['industry_id'],
             ]);
         });
     }

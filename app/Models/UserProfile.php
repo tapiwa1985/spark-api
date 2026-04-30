@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['user_id', 'bio', 'dob', 'gender'])]
+#[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id'])]
 class UserProfile extends Model
 {
     /** @use HasFactory<\Database\Factories\UserProfileFactory> */
@@ -28,5 +28,13 @@ class UserProfile extends Model
     public function profileImages(): HasMany
     {
         return $this->hasMany(ProfileImage::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function industry(): BelongsTo
+    {
+        return $this->belongsTo(Industry::class);
     }
 }

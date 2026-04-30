@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace App\Services;
 
 use App\Repositories\Contracts\IndustryRepositoryInterface;
 use App\Services\Contracts\IndustryServiceInterface;
 
-class IndustryService extends BaseService implements IndustryServiceInterface 
+class IndustryService extends BaseService implements IndustryServiceInterface
 {
     /**
      * @var IndustryRepositoryInterface
@@ -14,7 +14,7 @@ class IndustryService extends BaseService implements IndustryServiceInterface
 
     /**
      * IndustryService Constructor.
-     * 
+     *
      * @param IndustryRepositoryInterface
      */
     public function __construct(IndustryRepositoryInterface $repo)

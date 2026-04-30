@@ -24,7 +24,7 @@ class AuthController extends Controller
 {
     /**
      * The user profile service instance.
-     * 
+     *
      * @var UserProfileServiceInterface
      */
     private UserProfileServiceInterface $_userProfileService;
@@ -45,7 +45,16 @@ class AuthController extends Controller
      */
     public function register(RegistrationRequest $request): JsonResponse
     {
-        $data = $request->only('name', 'email', 'password', 'bio', 'dob', 'gender');
+        $data = $request->only(
+            'name',
+            'email',
+            'password',
+            'bio',
+            'dob',
+            'gender',
+            'job_title',
+            'industry_id'
+        );
 
         $userProfile = $this->_userProfileService->create($data);
         $token = auth()->login($userProfile->user);

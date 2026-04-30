@@ -33,6 +33,8 @@ class RegistrationRequest extends ApiRequest
                 'before:' . Carbon::now()->subYears(18)->format('Y-m-d'),
             ],
             'gender' => ['required', 'in:male,female'],
+            'job_title' => ['required', 'string'],
+            'industry_id' => ['required', 'integer', 'exists:industries,id'],
         ];
     }
 }

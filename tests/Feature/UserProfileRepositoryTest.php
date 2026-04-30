@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Repositories\Contracts\UserProfileRepositoryInterface;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Models\Industry;
 
 /**
  * Feature tests for user profile repository behavior.
@@ -16,6 +17,9 @@ class UserProfileRepositoryTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @var UserProfileRepositoryInterface
+     */
     private UserProfileRepositoryInterface $_userProfileRepository;
 
     /**
@@ -37,12 +41,16 @@ class UserProfileRepositoryTest extends TestCase
         // Create a parent user because profile has a user_id foreign key.
         $user = User::factory()->create();
 
+        $industry = Industry::factory()->create();
+
         // Create a new user profile using the repository
         $userProfileData = [
             'user_id' => $user->id,
             'bio' => fake()->paragraph,
             'dob' => fake()->date(),
-            'gender' => 'male'
+            'gender' => 'male',
+            'industry_id' => $industry->id,
+            'job_title' => fake()->jobTitle(),
         ];
 
         $userProfile = $this->_userProfileRepository->create($userProfileData);
@@ -51,10 +59,15 @@ class UserProfileRepositoryTest extends TestCase
         $this->assertNotNull($userProfile);
         $this->assertInstanceOf(UserProfile::class, $userProfile);
         $this->assertInstanceOf(User::class, $userProfile->user);
+        $this->assertInstanceOf(Industry::class, $userProfile->industry);
+
         $this->assertEquals($userProfileData['user_id'], $userProfile->user_id);
         $this->assertEquals($userProfileData['bio'], $userProfile->bio);
         $this->assertEquals($userProfileData['dob'], $userProfile->dob);
         $this->assertEquals($userProfileData['gender'], $userProfile->gender);
+        $this->assertEquals($userProfileData['job_title'], $userProfile->job_title);
+        $this->assertEquals($userProfileData['industry_id'], $userProfile->industry_id);
+
         $this->assertEquals($userProfile->user->id, $user->id);
         $this->assertEquals($userProfile->user->name, $user->name);
         $this->assertEquals($userProfile->user->email, $user->email);
@@ -66,6 +79,8 @@ class UserProfileRepositoryTest extends TestCase
             'bio' => $userProfileData['bio'],
             'dob' => $userProfileData['dob'],
             'gender' => $userProfileData['gender'],
+            'industry_id' => $industry->id,
+            'job_title' => $userProfileData['job_title'],
         ]);
     }
 

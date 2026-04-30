@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserProfile;
 use Carbon\Carbon;
+use App\Models\Industry;
 
 class AuthControllerTest extends TestCase
 {
@@ -127,6 +128,8 @@ class AuthControllerTest extends TestCase
      */
     public function testCreateUserProfile()
     {
+        $industry = Industry::factory()->create();
+
         // Build a valid payload for the registration endpoint.
         $request = [
             'name' => fake()->name(),
@@ -135,6 +138,8 @@ class AuthControllerTest extends TestCase
             'bio' => fake()->sentence(),
             'dob' => '1990-12-12',
             'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+            'industry_id' => $industry->id,
         ];
 
         // Assert a profile is created and the response mirrors key submitted fields.
@@ -145,6 +150,11 @@ class AuthControllerTest extends TestCase
                     'bio' => $request['bio'],
                     'dob' => $request['dob'],
                     'gender' => $request['gender'],
+                    'job_title' => $request['job_title'],
+                    'industry' => [
+                        'id' => $industry->id,
+                        'industry_name' => $industry->industry_name,
+                    ],
                     'user' => [
                         'name' => $request['name'],
                         'email' => $request['email'],
@@ -175,6 +185,108 @@ class AuthControllerTest extends TestCase
                 'errors' => [
                     'name' => [
                         'The name field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenJobTitleIsEmptyAssertUnprocessable()
+    {
+        // Name is required, so this payload should fail validation.
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => fake()->password(),
+            'bio' => fake()->sentence(),
+            'dob' => fake()->date(),
+            'gender' => 'male',
+            'job_title' => '',
+        ];
+
+        // Verify Laravel returns a validation error for the missing name.
+        $this->postJson('/api/v1/auth/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'job_title' => [
+                        'The job title field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenIndustryIdIsEmptyAssertUnprocessable()
+    {
+        // Name is required, so this payload should fail validation.
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => fake()->password(),
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+        ];
+
+        // Verify Laravel returns a validation error for the missing name.
+        $this->postJson('/api/v1/auth/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'industry_id' => [
+                        'The industry id field is required.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenIndustryIdIsStringAssertUnprocessable()
+    {
+        // Name is required, so this payload should fail validation.
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => 'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+            'industry_id' => 'invalid'
+        ];
+
+        // Verify Laravel returns a validation error for the missing name.
+        $this->postJson('/api/v1/auth/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'industry_id' => [
+                        'The industry id field must be an integer.'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testWhenIndustryIdIsInvalidAssertUnprocessable()
+    {
+        // Name is required, so this payload should fail validation.
+        $request = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => 'StrongP@ssword123#!',
+            'bio' => fake()->sentence(),
+            'dob' => '1990-12-12',
+            'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+            'industry_id' => 50000
+        ];
+
+        // Verify Laravel returns a validation error for the missing name.
+        $this->postJson('/api/v1/auth/register', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'industry_id' => [
+                        'The selected industry id is invalid.'
                     ]
                 ]
             ]);

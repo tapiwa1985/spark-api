@@ -34,11 +34,17 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUser->email = $mockUserData['email'];
         $mockUser->password = $mockUserData['password'];
 
+        $mockIndustry = Mockery::mock(Industry::class)->makePartial();
+        $mockIndustry->id = rand(100, 900);
+        $mockIndustry->industry_name = fake()->word();
+
         // Arrange profile attributes expected by UserProfileRepository::create.
         $mockUserProfileData = [
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+            'industry_id' => $mockIndustry->id,
         ];
 
         // Build a partial profile model returned by the mocked profile repository.
@@ -47,6 +53,8 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUserProfile->bio = $mockUserProfileData['bio'];
         $mockUserProfile->dob = $mockUserProfileData['dob'];
         $mockUserProfile->gender = $mockUserProfileData['gender'];
+        $mockUserProfile->job_title = $mockUserProfileData['job_title'];
+        $mockUserProfile->industry_id = $mockUserProfileData['industry_id'];
 
         // Expect one user creation call with exactly the arranged user payload.
         $userRepoMock = $this->mock(
@@ -70,6 +78,8 @@ class UserProfileServiceUnitTest extends TestCase
                     'bio' => $mockUserProfileData['bio'],
                     'dob' => $mockUserProfileData['dob'],
                     'gender' => $mockUserProfileData['gender'],
+                    'industry_id' => $mockUserProfileData['industry_id'],
+                    'job_title' => $mockUserProfileData['job_title'],
                 ])
                 ->andReturn($mockUserProfile);
             }
@@ -89,6 +99,8 @@ class UserProfileServiceUnitTest extends TestCase
         $this->assertInstanceOf(User::class, $result->user);
         $this->assertEquals($result->user->name, $mockUserData['name']);
         $this->assertEquals($result->user->email, $mockUserData['email']);
+        $this->assertEquals($result->job_title, $mockUserProfileData['job_title']);
+        $this->assertEquals($result->industry_id, $mockUserProfileData['industry_id']);
     }
 
     public function testGetUserProfileByEmail()
@@ -125,6 +137,8 @@ class UserProfileServiceUnitTest extends TestCase
         $this->assertEquals($result->bio, $mockUserProfile->bio);
         $this->assertEquals($result->dob, $mockUserProfile->dob);
         $this->assertEquals($result->gender, $mockUserProfile->gender);
+        $this->assertEquals($result->job_title, $mockUserProfile->job_title);
+        $this->assertEquals($result->industry_id, $mockUserProfile->industry_id);
 
         $this->assertEquals($result->user->id, $mockUser->id);
         $this->assertEquals($result->user->email, $mockUser->email);

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\UserProfile;
 use App\Models\User;
+use App\Models\Industry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,6 +24,8 @@ class UserProfileFactory extends Factory
             'bio' => fake()->sentence(),
             'dob' => fake()->date(),
             'gender' => 'male',
+            'job_title' => fake()->jobTitle(),
+            'industry_id' => Industry::factory()->create(),
         ];
     }
 }

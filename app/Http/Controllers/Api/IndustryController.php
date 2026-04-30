@@ -16,7 +16,7 @@ class IndustryController extends Controller
 
     /**
      * IndustryController constructor.
-     * 
+     *
      * @param IndustryServiceInterface
      */
     public function __construct(IndustryServiceInterface $industryService)
@@ -26,7 +26,7 @@ class IndustryController extends Controller
 
     /**
      * Returns a collection of industries.
-     * 
+     *
      * @return IndustryResourceCollection
      */
     public function index(): IndustryResourceCollection
