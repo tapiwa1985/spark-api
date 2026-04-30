@@ -51,16 +51,15 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
             $user = $this->userRepo->create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => $data['password'],
+                'password' => $data['password'] ?? null,
+                'linkedin_id' => $data['linkedin_id'] ?? null,
+                'linkedin_token' => $data['linkedin_token'] ?? null,
+                'linkedin_refresh_token' => $data['linkedin_refresh_token'] ?? null,
             ]);
 
             return parent::create([
                 'user_id' => $user->id,
-                'bio' => $data['bio'],
                 'dob' => $data['dob'],
-                'gender' => $data['gender'],
-                'job_title' => $data['job_title'],
-                'industry_id' => $data['industry_id'],
             ]);
         });
     }

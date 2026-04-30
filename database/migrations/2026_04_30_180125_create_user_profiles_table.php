@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->unique();
             $table->string('bio')->nullable();
             $table->date('dob')->nullable();
-            $table->enum('gender', ['male','female']);
-            $table->string('job_title');
-            $table->foreignId('industry_id')->references('id')->on('industries');
+            $table->enum('gender', ['male','female'])->nullable();
+            $table->string('job_title')->nullable();;
+            $table->foreignId('industry_id')->nullable()->references('id')->on('industries');
             $table->timestamps();
         });
     }

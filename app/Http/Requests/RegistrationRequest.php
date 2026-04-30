@@ -27,16 +27,12 @@ class RegistrationRequest extends ApiRequest
                     ->symbols()
                     ->mixedCase()
             ],
-            'bio' => ['required', 'string', 'max:255'],
-            'dob' => ['
-                required',
+            'dob' => [
+                'required',
                 'date',
                 (new Date())->beforeToday(),
                 'before:' . Carbon::now()->subYears(18)->format('Y-m-d'),
             ],
-            'gender' => ['required', 'in:male,female'],
-            'job_title' => ['required', 'string'],
-            'industry_id' => ['required', 'integer', 'exists:industries,id'],
         ];
     }
 }

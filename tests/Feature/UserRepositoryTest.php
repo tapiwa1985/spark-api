@@ -84,4 +84,49 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals($result->email, $user->email);
         $this->assertEquals($result->name, $user->name);
     }
+
+    public function testCreateLinkedInUser()
+    {
+        // Arrange a valid user payload for repository persistence.
+        $userData = [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'linkedin_id' => fake()->uuid(),
+            'linkedin_token' => fake()->sha256(),
+            'linkedin_refresh_token' => fake()->sha256(),
+        ];
+
+        // Act by calling the repository create method directly.
+        $result = $this->_userRepository->create($userData);
+
+        // Assert the row was persisted to the database.
+        $this->assertDatabaseHas('users', [
+            'name' => $userData['name'],
+            'email' => $userData['email'],
+            'linkedin_id' => $userData['linkedin_id'],
+        ]);
+
+        // Assert the repository returns the expected model instance and values.
+        $this->assertInstanceOf(User::class, $result);
+        $this->assertEquals($result->name, $userData['name']);
+        $this->assertEquals($result->email, $userData['email']);
+        $this->assertEquals($result->linkedin_id, $userData['linkedin_id']);
+    }
+
+    public function testGetUserByLinkedInId()
+    {
+        // Seed a user and fetch it through the repository contract.
+        $user = User::factory()->create([
+            'linkedin_id' => fake()->uuid(),
+        ]);
+
+        $result = $this->_userRepository->findByLinkedInId($user->linkedin_id);
+
+        // Verify the repository returns the correct model data.
+        $this->assertInstanceOf(User::class, $result);
+        $this->assertEquals($result->id, $user->id);
+        $this->assertEquals($result->linkedin_id, $user->linkedin_id);
+        $this->assertEquals($result->email, $user->email);
+        $this->assertEquals($result->name, $user->name);
+    }
 }

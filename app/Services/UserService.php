@@ -8,6 +8,9 @@ use App\Services\Contracts\UserServiceInterface;
 
 class UserService extends BaseService implements UserServiceInterface
 {
+    /**
+     * @var UserRepositoryInterface $userRepository
+     */
     protected UserRepositoryInterface $userRepository;
 
     /**
@@ -31,5 +34,16 @@ class UserService extends BaseService implements UserServiceInterface
     public function getUserByEmail(string $email): ?Model
     {
         return $this->repository->findByEmail($email);
+    }
+
+     /**
+     * Get a user by their LinkedIn ID.
+     *
+     * @param string $linkedinId
+     * @return Model|null
+     */
+    public function fetchByLinkedInId(string $linkedinId): ?Model
+    {
+        return $this->repository->findByLinkedInId($linkedinId);
     }
 }

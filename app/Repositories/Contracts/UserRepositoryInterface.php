@@ -13,4 +13,12 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
      * @return Model|null
      */
     public function findByEmail(string $email): ?Model;
+
+    /**
+     * Find a user by their LinkedIn ID.
+     *
+     * @param string $linkedinId
+     * @return Model|null
+     */
+    public function findByLinkedInId(string $linkedinId): ?Model;
 }

@@ -13,4 +13,12 @@ interface UserServiceInterface extends BaseServiceInterface
      * @return Model|null
      */
     public function getUserByEmail(string $email): ?Model;
+
+    /**
+     * Get a user by their LinkedIn ID.
+     *
+     * @param string $linkedinId
+     * @return Model|null
+     */
+    public function fetchByLinkedInId(string $linkedinId): ?Model;
 }

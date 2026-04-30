@@ -39,4 +39,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return $this->model->where('email', $email)->first();
     }
+
+    /**
+     * Find a user by their LinkedIn ID.
+     *
+     * @param string $linkedinId
+     * @return Model|null
+     */
+    public function findByLinkedInId(string $linkedinId): ?Model
+    {
+        return $this->model->where('linkedin_id', $linkedinId)->first();
+    }
 }

@@ -49,11 +49,7 @@ class AuthController extends Controller
             'name',
             'email',
             'password',
-            'bio',
             'dob',
-            'gender',
-            'job_title',
-            'industry_id'
         );
 
         $userProfile = $this->_userProfileService->create($data);
