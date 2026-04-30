@@ -9,6 +9,7 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\UpdateUserProfileRequest;
 
 /**
  * Controller responsible for handling user profile creation and management.
@@ -54,7 +55,13 @@ class UserProfileController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    public function update(string $userProfileId, Request $request): UserProfileResource
+    /**
+     * @param string $userProfileId
+     * @param UpdateUserProfileRequest $request
+     *
+     * @return UserProfileResource
+     */
+    public function update(string $userProfileId, UpdateUserProfileRequest $request): UserProfileResource
     {
         $data = $request->only('bio', 'dob', 'gender');
 
