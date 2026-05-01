@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('interest_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('icon');
             $table->string('interest_category_name')->unique();
             $table->timestamps();
         });

@@ -53,4 +53,43 @@ class UserProfileController extends Controller
 
         return new UserProfileResource($userProfile);
     }
+
+    /**
+     * @param Request $request
+     *
+     * @return UserProfileResource
+     */
+    public function addInterests(Request $request): UserProfileResource
+    {
+        $data = $request->validate([
+            'interest_ids' => 'required|array',
+            'interest_ids.*' => 'exists:interests,id',
+        ]);
+
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $userProfile = $this->_userProfileService->addInterests((int)$userProfile->id, $data['interest_ids']);
+
+        return new UserProfileResource($userProfile);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return UserProfileResource
+     */
+    public function updateBio(Request $request): UserProfileResource
+    {
+        $data = $request->validate([
+            'bio' => 'required|string|max:500',
+        ]);
+
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $userProfile = $this->_userProfileService->update((int)$userProfile->id, ['bio' => $data['bio']]);
+
+        return new UserProfileResource($userProfile);
+    }
 }

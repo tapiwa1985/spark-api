@@ -13,4 +13,13 @@ interface UserProfileServiceInterface extends BaseServiceInterface
      * @return UserProfile|null
      */
     public function fetchByEmail(string $email): ?UserProfile;
+
+    /**
+     * Add interests to a user profile without removing existing selections.
+     *
+     * @param int $userProfileId
+     * @param array $interestIds
+     * @return UserProfile
+     */
+    public function addInterests(int $userProfileId, array $interestIds): UserProfile;
 }

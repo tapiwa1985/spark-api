@@ -11,6 +11,7 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 
 /**
  * Class UserProfileService
+ *
  * @package App\Services
  */
 class UserProfileService extends BaseService implements UserProfileServiceInterface
@@ -28,7 +29,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     /**
      * UserProfileService constructor
      *
-     * @param UserProfileRepository $userRepo
+     * @param UserRepositoryInterface $userRepo
      * @param UserProfileRepositoryInterface $userProfileRepo
      */
     public function __construct(UserRepositoryInterface $userRepo, UserProfileRepositoryInterface $userProfileRepo)
@@ -73,5 +74,21 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     public function fetchByEmail(string $email): ?UserProfile
     {
         return $this->userProfileRepo->findByEmail($email);
+    }
+
+    /**
+     * Attach interests to a user profile without detaching existing ones.
+     *
+     * @param int $userProfileId
+     * @param array $interestIds
+     * @return UserProfile
+     */
+    public function addInterests(int $userProfileId, array $interestIds): UserProfile
+    {
+        $userProfile = $this->userProfileRepo->find($userProfileId);
+
+        $userProfile->interests()->syncWithoutDetaching($interestIds);
+
+        return $userProfile->fresh('interests');
     }
 }

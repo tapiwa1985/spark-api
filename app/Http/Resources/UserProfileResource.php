@@ -24,6 +24,7 @@ class UserProfileResource extends JsonResource
             'updated_at' => (string)$this->updated_at,
             'user' => new UserResource($this->user),
             'industry' => new IndustryResource($this->industry),
+            'interests' => InterestResource::collection($this->whenLoaded('interests')),
         ];
     }
 }

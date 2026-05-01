@@ -9,6 +9,7 @@ use App\Models\UserProfile;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\UserProfileRepositoryInterface;
 use App\Services\UserProfileService;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Unit tests for user profile service business logic.
@@ -36,10 +37,6 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUser->name = $mockUserData['name'];
         $mockUser->email = $mockUserData['email'];
         $mockUser->password = $mockUserData['password'];
-
-        $mockIndustry = Mockery::mock(Industry::class)->makePartial();
-        $mockIndustry->id = rand(100, 900);
-        $mockIndustry->industry_name = fake()->word();
 
         // Arrange profile attributes expected by UserProfileRepository::create.
         $mockUserProfileData = [
@@ -197,5 +194,41 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUserProfile->id = rand(1, 100);
 
         return $mockUserProfile;
+    }
+
+    public function testAddInterestsToUserProfile()
+    {
+        $userProfileId = 42;
+        $interestIds = [1, 2, 3];
+
+        $userProfileMock = Mockery::mock(UserProfile::class);
+        $relationMock = Mockery::mock(BelongsToMany::class);
+
+        $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class);
+        $userProfileRepoMock->shouldReceive('find')
+            ->once()
+            ->with($userProfileId)
+            ->andReturn($userProfileMock);
+
+        $userRepoMock = $this->mock(UserRepositoryInterface::class);
+
+        $userProfileMock->shouldReceive('interests')
+            ->once()
+            ->andReturn($relationMock);
+
+        $relationMock->shouldReceive('syncWithoutDetaching')
+            ->once()
+            ->with($interestIds)
+            ->andReturn(['attached' => [3], 'detached' => [], 'updated' => []]);
+
+        $userProfileMock->shouldReceive('fresh')
+            ->once()
+            ->with('interests')
+            ->andReturn($userProfileMock);
+
+        $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
+        $result = $service->addInterests($userProfileId, $interestIds);
+
+        $this->assertSame($userProfileMock, $result);
     }
 }

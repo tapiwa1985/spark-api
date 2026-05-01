@@ -9,6 +9,7 @@ use App\Repositories\Contracts\UserProfileRepositoryInterface;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\Industry;
+use App\Models\Interest;
 
 /**
  * Feature tests for user profile repository behavior.
@@ -138,5 +139,18 @@ class UserProfileRepositoryTest extends TestCase
             'dob' => $userProfileData['dob'],
             'gender' => $userProfileData['gender'],
         ]);
+    }
+
+    public function testAddInterestsToUserProfile()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $interests = Interest::factory(3)->create();
+
+        $userProfile->interests()->attach($interests->pluck('id')->toArray());
+
+        $this->assertCount(3, $userProfile->interests);
+        foreach ($interests as $interest) {
+            $this->assertTrue($userProfile->interests->contains($interest));
+        }
     }
 }

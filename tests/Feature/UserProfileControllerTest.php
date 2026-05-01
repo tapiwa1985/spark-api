@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\UserProfile;
 use App\Models\Industry;
+use App\Models\Interest;
 
 /**
  * Feature tests for the user registration/profile API endpoint.
@@ -146,5 +147,147 @@ class UserProfileControllerTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->json('PUT', '/api/v1/user-profiles', $request)
             ->assertStatus(403);
+    }
+
+    public function testAddInterestsToUserProfile()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $interest1 = Interest::factory()->create();
+        $interest2 = Interest::factory()->create();
+
+        $request = [
+            'interest_ids' => [$interest1->id, $interest2->id],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/interests', $request)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $userProfile->id,
+                    'interests' => [
+                        ['id' => $interest1->id, 'interest_name' => $interest1->interest_name],
+                        ['id' => $interest2->id, 'interest_name' => $interest2->interest_name],
+                    ],
+                ]
+        ]);
+    }
+
+    public function testAddInterestsToUserProfileWhenUserDoesNotOwnProfileAssertForbidden()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $interest1 = Interest::factory()->create();
+        $interest2 = Interest::factory()->create();
+
+        $request = [
+            'interest_ids' => [$interest1->id, $interest2->id],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/interests', $request)
+            ->assertStatus(403);
+    }
+
+    public function testAddInterestsToUserProfileWhenInterestIdIsInvalidAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'interest_ids' => [999999, 888888],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/interests', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'interest_ids.0' => ['The selected interest_ids.0 is invalid.'],
+                    'interest_ids.1' => ['The selected interest_ids.1 is invalid.'],
+                ]
+        ]);
+    }
+
+    public function testUpdateUserBio()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'bio' => fake()->paragraph(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/bio', $request)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $userProfile->id,
+                    'bio' => $request['bio'],
+                ]
+        ]);
+    }
+
+    public function testUpdateUserBioWhenUserDoesNotOwnProfileAssertForbidden()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $request = [
+            'bio' => fake()->paragraph(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/bio', $request)
+            ->assertStatus(403);
+    }
+
+    public function testUpdateUserBioWhenBioIsEmptyAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'bio' => '',
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/bio', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'bio' => ['The bio field is required.'],
+                ]
+        ]);
+    }
+
+    public function testUpdateUserBioWhenBioExceedsMaxLengthAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'bio' => str_repeat('a', 501),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/bio', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'bio' => ['The bio field must not be greater than 500 characters.'],
+                ]
+        ]);
     }
 }

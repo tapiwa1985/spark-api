@@ -18,6 +18,7 @@ class InterestCategoryFactory extends Factory
     public function definition(): array
     {
         return [
+            'icon' => fake()->imageUrl(),
             'interest_category_name' => fake()->lexify('???? ???')
         ];
     }

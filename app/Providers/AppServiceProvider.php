@@ -56,6 +56,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\InterestRepositoryInterface::class,
             \App\Repositories\InterestRepository::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\InterestCategoryRepositoryInterface::class,
+            \App\Repositories\InterestCategoryRepository::class,
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\InterestCategoryServiceInterface::class,
+            \App\Services\InterestCategoryService::class,
+        );
     }
 
     /**

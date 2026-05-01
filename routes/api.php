@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\IndustryController;
 use App\Http\Controllers\Api\LinkedInController;
+use App\Http\Controllers\Api\InterestCategoryController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -20,7 +21,13 @@ Route::prefix('v1')->group(function() {
     Route::get('industries', [IndustryController::class, 'index']);
 
     Route::middleware(['auth'])->group(function() {
-        Route::put('user-profiles', [UserProfileController::class, 'update']);
+        Route::prefix('user-profiles')->group(function() {
+            Route::put('/', [UserProfileController::class, 'update']);
+            Route::put('interests', [UserProfileController::class, 'addInterests']);
+            Route::patch('bio', [UserProfileController::class, 'updateBio']);
+        });
+
+        Route::get('interest-categories', [InterestCategoryController::class, 'index']);
     });
 });
 

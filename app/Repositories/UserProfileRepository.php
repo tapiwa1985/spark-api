@@ -31,7 +31,7 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
             ->whereHas('user', function ($query) use ($email) {
                 $query->where('email', $email);
             })
-            ->with('user')
+            ->with(['user', 'interests'])
             ->first();
     }
 }
