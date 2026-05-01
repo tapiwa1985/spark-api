@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Policies\UserProfilePolicy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 
 #[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id'])]
+#[UsePolicy(UserProfilePolicy::class)]
 class UserProfile extends Model
 {
     /** @use HasFactory<\Database\Factories\UserProfileFactory> */

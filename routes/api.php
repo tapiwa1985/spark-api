@@ -20,7 +20,7 @@ Route::prefix('v1')->group(function() {
     Route::get('industries', [IndustryController::class, 'index']);
 
     Route::middleware(['auth'])->group(function() {
-        Route::put('user-profiles/{userProfileId}', [UserProfileController::class, 'update']);
+        Route::put('user-profiles', [UserProfileController::class, 'update']);
     });
 });
 

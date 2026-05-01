@@ -15,8 +15,9 @@ class UpdateUserProfileRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'bio' => ['required', 'string'],
-            'dob' => ['required', 'date']
+            'job_title' => ['required', 'string'],
+            'industry_id' => ['required', 'exists:industries,id'],
+            'gender' => ['required', 'string', 'in:male,female']
         ];
     }
 }

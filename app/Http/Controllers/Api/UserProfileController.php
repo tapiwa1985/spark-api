@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\UpdateUserProfileRequest;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Controller responsible for handling user profile creation and management.
@@ -41,11 +42,14 @@ class UserProfileController extends Controller
      *
      * @return UserProfileResource
      */
-    public function update(string $userProfileId, UpdateUserProfileRequest $request): UserProfileResource
+    public function update(UpdateUserProfileRequest $request): UserProfileResource
     {
-        $data = $request->only('bio', 'dob', 'gender');
+        $data = $request->only('job_title', 'industry_id', 'gender');
 
-        $userProfile = $this->_userProfileService->update((int)$userProfileId, $data);
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $userProfile = $this->_userProfileService->update((int)$userProfile->id, $data);
 
         return new UserProfileResource($userProfile);
     }
