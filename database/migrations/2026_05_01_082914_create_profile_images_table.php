@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('image_url');
             $table->integer('display_order');
             $table->boolean('is_display');
-            $table->foreignId('user_profile_id');
+            $table->foreignId('user_profile_id')->references('id')->on('user_profiles');;
             $table->string('caption')->nullable();
             $table->string('metadata')->nullable();
             $table->timestamps();

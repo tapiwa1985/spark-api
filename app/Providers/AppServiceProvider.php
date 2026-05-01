@@ -66,6 +66,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\InterestCategoryServiceInterface::class,
             \App\Services\InterestCategoryService::class,
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\ProfileImageServiceInterface::class,
+            \App\Services\ProfileImageService::class,
+        );
     }
 
     /**

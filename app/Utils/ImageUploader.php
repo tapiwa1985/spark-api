@@ -11,8 +11,8 @@ use Intervention\Image\Laravel\Facades\Image;
 class ImageUploader implements ImageUploaderInterface
 {
     /**
-     * @param File
-     * @return string|null
+     * @param \Illuminate\Http\UploadedFile|\SplFileInfo $file
+     * @return string Permanent public URL for the object (same shape as Storage::disk('gcs')->url()).
      */
     public function uploadImage($file): ?string
     {
@@ -26,14 +26,23 @@ class ImageUploader implements ImageUploaderInterface
         $tempFilePath = storage_path("temp/{$filename}");
         File::ensureDirectoryExists(dirname($tempFilePath));
 
-        $image->save($tempFilePath);
+        try {
+            $image->save($tempFilePath);
 
-        $uploaded = Storage::disk('gcs')->put($filename, file_get_contents($tempFilePath));
+            $contents = file_get_contents($tempFilePath);
+            if ($contents === false) {
+                throw new \RuntimeException('Could not read the processed image from disk.');
+            }
 
-        if ($uploaded) {
-            return $filename;
+            $disk = Storage::disk('gcs');
+            $disk->put($filename, $contents);
+
+            // Persist a full https URL so clients can use it in <img src> (not just the object path).
+            return $disk->url($filename);
+        } finally {
+            if (File::exists($tempFilePath)) {
+                File::delete($tempFilePath);
+            }
         }
-
-        return null;
     }
 }

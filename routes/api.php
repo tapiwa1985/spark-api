@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function() {
             Route::put('/', [UserProfileController::class, 'update']);
             Route::put('interests', [UserProfileController::class, 'addInterests']);
             Route::patch('bio', [UserProfileController::class, 'updateBio']);
+            Route::post('images', [UserProfileController::class, 'uploadProfilePicture']);
         });
 
         Route::get('interest-categories', [InterestCategoryController::class, 'index']);

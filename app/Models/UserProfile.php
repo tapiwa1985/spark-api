@@ -11,7 +11,7 @@ use App\Policies\UserProfilePolicy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id'])]
+#[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id', 'profile_picture_url'])]
 #[UsePolicy(UserProfilePolicy::class)]
 class UserProfile extends Model
 {

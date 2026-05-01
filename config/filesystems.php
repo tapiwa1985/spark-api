@@ -63,9 +63,15 @@ return [
         'gcs' => [
             'driver' => 'gcs',
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),
-            'key_file' => env('GOOGLE_CLOUD_KEY_FILE'),
+            'key_file' => json_decode(base64_decode((string) env('GOOGLE_CLOUD_KEY_FILE')), true),
             'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET'),
+            // Optional: public base for URLs (default https://storage.googleapis.com). Use your CDN/custom domain if set up.
+            'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_URL') ?: null,
             'visibility' => 'public',
+            // Required when the bucket has "Uniform bucket-level access" enabled (no per-object ACLs).
+            'visibility_handler' => \League\Flysystem\GoogleCloudStorage\UniformBucketLevelAccessVisibility::class,
+            'throw' => true,
+            'report' => false,
         ],
 
     ],

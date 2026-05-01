@@ -10,6 +10,11 @@ use App\Http\Resources\UserProfileResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\UpdateUserProfileRequest;
 use Illuminate\Support\Facades\Gate;
+use App\Utils\Contracts\ImageUploaderInterface;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\ProfileImageResource;
+use App\Services\Contracts\ProfileImageServiceInterface;
+use App\Http\Requests\UploadProfileImageRequest;
 
 /**
  * Controller responsible for handling user profile creation and management.
@@ -27,13 +32,23 @@ class UserProfileController extends Controller
     private UserProfileServiceInterface $_userProfileService;
 
     /**
+     * @var ImageUploaderInterface $_imageUploadService
+     */
+    private ImageUploaderInterface $_imageUploadService;
+
+    private ProfileImageServiceInterface $_profileImageService;
+
+    /**
      * UserProfileController constructor.
      *
      * @param UserProfileServiceInterface $userProfileService
+     * @param ImageUploaderInterface $imageUploaderService
      */
-    public function __construct(UserProfileServiceInterface $userProfileService)
+    public function __construct(UserProfileServiceInterface $userProfileService, ImageUploaderInterface $imageUploaderService, ProfileImageServiceInterface $profileImageService)
     {
         $this->_userProfileService = $userProfileService;
+        $this->_imageUploadService = $imageUploaderService;
+        $this->_profileImageService = $profileImageService;
     }
 
     /**
@@ -91,5 +106,21 @@ class UserProfileController extends Controller
         $userProfile = $this->_userProfileService->update((int)$userProfile->id, ['bio' => $data['bio']]);
 
         return new UserProfileResource($userProfile);
+    }
+
+    public function uploadProfilePicture(UploadProfileImageRequest $request): ProfileImageResource
+    {
+        $data = $request->only('image', 'display_order', 'is_display');
+
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $data['user_profile_id'] = $userProfile->id;
+
+        $imageUrl = $this->_imageUploadService->uploadImage($data['image']);
+        $data['image_url'] = $imageUrl;
+        $profileImage = $this->_profileImageService->create($data);
+
+        return new ProfileImageResource($profileImage);
     }
 }
