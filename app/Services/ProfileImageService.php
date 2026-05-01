@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace App\Services;
 
 use App\Repositories\Contracts\ProfileImageRepositoryInterface;
 use App\Services\Contracts\ProfileImageServiceInterface;
 
-class ProfileImageService extends BaseService implements ProfileImageServiceInterface 
+class ProfileImageService extends BaseService implements ProfileImageServiceInterface
 {
     protected ProfileImageRepositoryInterface $profileImageRepository;
 

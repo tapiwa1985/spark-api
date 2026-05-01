@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UploadProfileImageRequest extends ApiRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *

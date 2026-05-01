@@ -2,6 +2,6 @@
 
 namespace App\Services\Contracts;
 
-interface ProfileImageServiceInterface extends BaseServiceInterface 
+interface ProfileImageServiceInterface extends BaseServiceInterface
 {
 }
