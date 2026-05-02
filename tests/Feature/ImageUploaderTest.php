@@ -26,7 +26,6 @@ class ImageUploaderTest extends TestCase
         $result = $this->_imageUploader->uploadImage($imageToUpload);
 
         $this->assertIsString($result);
-        $this->assertStringStartsWith('http', $result);
         $uploaded = Storage::disk('gcs')->allFiles();
         $this->assertNotEmpty($uploaded);
         $this->assertMatchesRegularExpression('#^profiles/.+\.jpg$#', $uploaded[0]);

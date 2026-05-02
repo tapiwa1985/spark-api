@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Resources\ProfileImageResource;
 use App\Services\Contracts\ProfileImageServiceInterface;
 use App\Http\Requests\UploadProfileImageRequest;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Controller responsible for handling user profile creation and management.
@@ -36,6 +37,9 @@ class UserProfileController extends Controller
      */
     private ImageUploaderInterface $_imageUploadService;
 
+    /**
+     * @var ProfileImageServiceInterface $_profileImageService
+     */
     private ProfileImageServiceInterface $_profileImageService;
 
     /**
@@ -108,6 +112,11 @@ class UserProfileController extends Controller
         return new UserProfileResource($userProfile);
     }
 
+    /**
+     * @param UploadProfileImageRequest $request
+     *
+     * @return ProfileImageResource
+     */
     public function uploadProfilePicture(UploadProfileImageRequest $request): ProfileImageResource
     {
         $data = $request->only('image', 'display_order', 'is_display');
@@ -122,5 +131,39 @@ class UserProfileController extends Controller
         $profileImage = $this->_profileImageService->create($data);
 
         return new ProfileImageResource($profileImage);
+    }
+
+    /**
+     * @param string $imageId
+     */
+    public function setDisplayImage(string $imageId)
+    {
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $this->_profileImageService->setDisplayImage($userProfile->id, (int)$imageId);
+    }
+
+    /**
+     * @param string $imageId
+     * @return JsonResponse
+     */
+    public function deleteImage(string $imageId): JsonResponse
+    {
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $image = $this->_profileImageService->find((int)$imageId);
+        if ($image) {
+            $deleted = $this->_profileImageService->delete((int)$imageId);
+
+            if ($deleted) {
+                Storage::disk('gcs')->delete($image->image_url);
+
+                return response()->json([], Response::HTTP_NO_CONTENT);
+            }
+        }
+
+        return response()->json([], Response::HTTP_NOT_FOUND);
     }
 }
