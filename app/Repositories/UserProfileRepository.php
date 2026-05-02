@@ -6,15 +6,12 @@ use App\Models\UserProfile;
 use App\Repositories\Contracts\UserProfileRepositoryInterface;
 
 /**
- * Class UserProfileRepository
- * @package App\Repositories
+ * {@see UserProfile} persistence with email lookup across the owning {@see \App\Models\User}.
  */
 class UserProfileRepository extends BaseRepository implements UserProfileRepositoryInterface
 {
     /**
-     * UserProfileRepository constructor.
-     *
-     * @param UserProfile $model
+     * @param UserProfile $model Profile aggregate root.
      */
     public function __construct(UserProfile $model)
     {
@@ -22,8 +19,7 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
     }
 
     /**
-     * @param string $email
-     * @return Model|null
+     * Loads profile + `user` + `interests` where the related user email matches.
      */
     public function findByEmail(string $email): ?UserProfile
     {

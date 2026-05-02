@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * WGS84 coordinates bounded to valid latitude/longitude ranges for PostGIS storage.
+ */
 class UpdateUserLocationRequest extends ApiRequest
 {
     /**

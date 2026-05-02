@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             IndustriesTableSeeder::class,
             InterestsTableSeeder::class,
+            LanguagesTableSeeder::class,
         ]);
     }
 }

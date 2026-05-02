@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\IndustryController;
 use App\Http\Controllers\Api\LinkedInController;
 use App\Http\Controllers\Api\InterestCategoryController;
+use App\Http\Controllers\Api\LanguageController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -21,9 +22,12 @@ Route::prefix('v1')->group(function() {
     Route::get('industries', [IndustryController::class, 'index']);
 
     Route::middleware(['auth'])->group(function() {
+        Route::get('languages', [LanguageController::class, 'index']);
+
         Route::prefix('user-profiles')->group(function() {
             Route::put('/', [UserProfileController::class, 'update']);
             Route::put('interests', [UserProfileController::class, 'addInterests']);
+            Route::put('languages', [UserProfileController::class, 'addLanguages']);
             Route::patch('bio', [UserProfileController::class, 'updateBio']);
             Route::post('images', [UserProfileController::class, 'uploadProfilePicture']);
             Route::patch('location', [UserProfileController::class, 'updateLocation']);

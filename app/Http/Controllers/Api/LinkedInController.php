@@ -13,30 +13,23 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use App\Http\Resources\UserProfileResource;
 
 /**
- * Controller responsible for handling LinkedIn OAuth authentication.
- * This controller provides methods to initiate the LinkedIn OAuth flow and handle the callback from LinkedIn.
- * The getRedirectUrl method generates the LinkedIn OAuth authorization URL, while the callback method processes
- * the response from LinkedIn, retrieves the user's information, and returns it as a JSON response. The controller
- * relies on a user service to handle any user-related operations that may be necessary during the authentication process.
- *
- * @package App\Http\Controllers\Api
+ * LinkedIn OpenID login: web redirect callback, optional mobile authorization-code exchange, user upsert, and JWT response.
  */
 class LinkedInController extends Controller
 {
     /**
-     * @var UserServiceInterface $userService
+     * Looks up users by LinkedIn id for returning visitors.
      */
     private UserServiceInterface $_userService;
 
     /**
-     * @var UserProfileServiceInterface $userProfileService
+     * Creates user + profile when no LinkedIn id exists yet.
      */
     private UserProfileServiceInterface $_userProfileService;
+
     /**
-     * LinkedInController constructor.
-     *
-     * @param UserServiceInterface $userService
-     * @param UserProfileServiceInterface $userProfileService
+     * @param UserServiceInterface            $userService         LinkedIn id resolution.
+     * @param UserProfileServiceInterface    $userProfileService Registration payload when linking a new account.
      */
     public function __construct(UserServiceInterface $userService, UserProfileServiceInterface $userProfileService)
     {
@@ -44,6 +37,9 @@ class LinkedInController extends Controller
         $this->_userProfileService = $userProfileService;
     }
 
+    /**
+     * @return string Authorization URL for the SPA or native client to open in a browser / web view.
+     */
     public function getRedirectUrl()
     {
         return Socialite::driver('linkedin-openid')
@@ -53,7 +49,9 @@ class LinkedInController extends Controller
     }
 
     /**
-     * @return JsonResponse
+     * Web: Socialite session callback. Mobile: `POST` with `code`, `redirect_uri`, optional PKCE `code_verifier`.
+     *
+     * @return JsonResponse Profile + JWT on success, `422` when token or profile fetch fails.
      */
     public function callback(Request $request): JsonResponse
     {
@@ -148,6 +146,11 @@ class LinkedInController extends Controller
         );
     }
 
+    /**
+     * Finds an existing user by LinkedIn id or creates one via {@see UserProfileServiceInterface::create}, then returns JWT JSON.
+     *
+     * @return JsonResponse Same shape as password login: `data`, `token`, `token_type`, `expires_in`.
+     */
     private function loginOrRegisterWithLinkedIn(
         string $linkedinId,
         string $name,

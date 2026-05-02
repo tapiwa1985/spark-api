@@ -6,9 +6,7 @@ use App\Models\InterestCategory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class InterestCategoryRepository
- *
- * @package App\Repositories
+ * {@see InterestCategory} listing through generic {@see BaseRepository} behavior.
  */
 class InterestCategoryRepository extends BaseRepository implements Contracts\InterestCategoryRepositoryInterface
 {
@@ -18,9 +16,7 @@ class InterestCategoryRepository extends BaseRepository implements Contracts\Int
     protected Model $model;
 
     /**
-     * InterestCategoryRepository constructor.
-     *
-     * @param InterestCategory $model
+     * @param InterestCategory $model Category aggregate root.
      */
     public function __construct(InterestCategory $model)
     {

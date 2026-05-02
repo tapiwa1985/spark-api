@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Multipart gallery upload with ordering and whether this file should show as the primary photo.
+ */
 class UploadProfileImageRequest extends ApiRequest
 {
     /**

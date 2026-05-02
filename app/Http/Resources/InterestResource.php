@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Compact interest tag (`id`, `interest_name`) for nested lists under categories or profiles.
+ */
 class InterestResource extends JsonResource
 {
     /**

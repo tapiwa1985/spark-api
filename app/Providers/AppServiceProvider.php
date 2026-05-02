@@ -74,6 +74,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\ProfileImageServiceInterface::class,
             \App\Services\ProfileImageService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\LanguageRepositoryInterface::class,
+            \App\Repositories\LanguageRepository::class,
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\LanguageServiceInterface::class,
+            \App\Services\LanguageService::class,
+        );
     }
 
     /**

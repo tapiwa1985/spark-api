@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\ProfileImageRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Gallery rows per profile and transactional reorder for “primary” photo selection.
+ */
 class ProfileImageRepository extends BaseRepository implements ProfileImageRepositoryInterface
 {
     /**
@@ -16,7 +19,7 @@ class ProfileImageRepository extends BaseRepository implements ProfileImageRepos
     protected Model $model;
 
     /**
-     * @param ProfileImage
+     * @param ProfileImage $model Profile image Eloquent model.
      */
     public function __construct(ProfileImage $model)
     {
@@ -26,9 +29,7 @@ class ProfileImageRepository extends BaseRepository implements ProfileImageRepos
     }
 
     /**
-     * @param int $userProfileId
-     * @param int $profileImageId
-     * @return void
+     * Moves `$profileImageId` to display order `1`, toggles `is_display`, and shifts sibling ordering inside a transaction.
      */
     public function setDisplayImage(int $userProfileId, int $profileImageId): void
     {

@@ -7,17 +7,18 @@ use Illuminate\Http\Request;
 use App\Services\Contracts\IndustryServiceInterface;
 use App\Http\Resources\IndustryResourceCollection;
 
+/**
+ * Exposes the industry taxonomy for profile job context (dropdowns, filters).
+ */
 class IndustryController extends Controller
 {
     /**
-     * @var IndustryServiceInterface
+     * Loads {@see \App\Models\Industry} rows through the service layer.
      */
     private IndustryServiceInterface $_industryService;
 
     /**
-     * IndustryController constructor.
-     *
-     * @param IndustryServiceInterface
+     * @param IndustryServiceInterface $industryService Repository-backed listing service.
      */
     public function __construct(IndustryServiceInterface $industryService)
     {
@@ -25,9 +26,7 @@ class IndustryController extends Controller
     }
 
     /**
-     * Returns a collection of industries.
-     *
-     * @return IndustryResourceCollection
+     * @return IndustryResourceCollection Every industry row ordered by repository defaults.
      */
     public function index(): IndustryResourceCollection
     {

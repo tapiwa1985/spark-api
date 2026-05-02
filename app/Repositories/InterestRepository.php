@@ -8,8 +8,7 @@ use Illuminate\Support\Collection;
 use App\Repositories\Contracts\InterestRepositoryInterface;
 
 /**
- * Class InterestRepository
- * @package App\Repositories
+ * {@see Interest} persistence including lookup scoped by category.
  */
 class InterestRepository extends BaseRepository implements InterestRepositoryInterface
 {
@@ -19,9 +18,7 @@ class InterestRepository extends BaseRepository implements InterestRepositoryInt
     protected Model $model;
 
     /**
-     * InterestRepository constructor.
-     *
-     * @param Interest
+     * @param Interest $model Interest tag model.
      */
     public function __construct(Interest $model)
     {
@@ -29,8 +26,7 @@ class InterestRepository extends BaseRepository implements InterestRepositoryInt
     }
 
     /**
-     * @param int $categoryId
-     * @return Collection
+     * @return Collection<int, \App\Models\Interest>
      */
     public function findByCategoryId(int $categoryId): Collection
     {

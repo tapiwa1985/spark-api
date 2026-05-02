@@ -10,6 +10,7 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\UserProfileRepositoryInterface;
 use App\Services\UserProfileService;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Unit tests for user profile service business logic.
@@ -21,6 +22,10 @@ class UserProfileServiceUnitTest extends TestCase
      */
     public function testCreateUserProfile()
     {
+        DB::shouldReceive('transaction')
+            ->once()
+            ->andReturnUsing(fn ($callback) => $callback());
+
         // Arrange base user attributes expected by UserRepository::create.
         $mockUserData = [
             'name' => fake()->name(),
@@ -38,7 +43,6 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUser->email = $mockUserData['email'];
         $mockUser->password = $mockUserData['password'];
 
-        // Arrange profile attributes expected by UserProfileRepository::create.
         $mockUserProfileData = [
             'dob' => fake()->date(),
         ];
@@ -81,7 +85,7 @@ class UserProfileServiceUnitTest extends TestCase
         // Assert the service returns the expected profile and attached user data.
         $this->assertNotNull($result);
         $this->assertInstanceOf(UserProfile::class, $result);
-        $this->assertEquals($result->dob, $mockUserProfileData['dob']);
+        $this->assertEquals($mockUserProfileData['dob'], $result->dob);
         $this->assertInstanceOf(User::class, $result->user);
         $this->assertEquals($result->user->name, $mockUserData['name']);
         $this->assertEquals($result->user->email, $mockUserData['email']);
@@ -101,6 +105,8 @@ class UserProfileServiceUnitTest extends TestCase
         $mockUserProfile->bio = fake()->sentence();
         $mockUserProfile->dob = fake()->date();
         $mockUserProfile->gender = 'male';
+        $mockUserProfile->job_title = fake()->jobTitle();
+        $mockUserProfile->industry_id = fake()->numberBetween(1, 100);
 
         $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class, 
             function($mock) use($mockUser, $mockUserProfile) {
@@ -228,6 +234,39 @@ class UserProfileServiceUnitTest extends TestCase
 
         $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
         $result = $service->addInterests($userProfileId, $interestIds);
+
+        $this->assertSame($userProfileMock, $result);
+    }
+
+    public function testAddLanguagesToUserProfile()
+    {
+        $userProfileId = 42;
+        $languageIds = [1, 2, 3];
+
+        $userProfileMock = Mockery::mock(UserProfile::class)->makePartial();
+        $userProfileMock->id = $userProfileId;
+        $relationMock = Mockery::mock(BelongsToMany::class);
+
+        $userProfileRepoMock = $this->mock(UserProfileRepositoryInterface::class);
+
+        $userRepoMock = $this->mock(UserRepositoryInterface::class);
+
+        $userProfileMock->shouldReceive('languages')
+            ->once()
+            ->andReturn($relationMock);
+
+        $relationMock->shouldReceive('syncWithoutDetaching')
+            ->once()
+            ->with($languageIds)
+            ->andReturn(['attached' => [3], 'detached' => [], 'updated' => []]);
+
+        $userProfileMock->shouldReceive('fresh')
+            ->once()
+            ->with('languages')
+            ->andReturn($userProfileMock);
+
+        $service = new UserProfileService($userRepoMock, $userProfileRepoMock);
+        $result = $service->addLanguages($userProfileMock, $languageIds);
 
         $this->assertSame($userProfileMock, $result);
     }

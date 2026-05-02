@@ -33,6 +33,7 @@ class UserProfileResource extends JsonResource
             'user' => new UserResource($this->user),
             'industry' => new IndustryResource($this->industry),
             'interests' => InterestResource::collection($this->whenLoaded('interests')),
+            'languages' => new LanguageResourceCollection($this->whenLoaded('languages')),
             'profile_images' => new ProfileImageResourceCollection($this->profileImages),
         ];
     }

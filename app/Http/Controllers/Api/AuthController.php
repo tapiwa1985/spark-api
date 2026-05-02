@@ -12,27 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\RegistrationRequest;
 
 /**
- * Controller responsible for handling user authentication, including login and token generation.
- * This controller uses JWT for authentication and relies on a user service to retrieve user information.
- * The login method validates the incoming request, attempts to authenticate the user, and returns a JSON
- * response containing the JWT token and user information if successful. If authentication fails,
- * it returns an unauthorized error response.
+ * Password-based registration and login returning JWT access tokens and {@see UserProfileResource} payloads.
  *
  * @package App\Http\Controllers\Api
  */
 class AuthController extends Controller
 {
     /**
-     * The user profile service instance.
-     *
-     * @var UserProfileServiceInterface
+     * Creates profiles on register and resolves the profile bundle after password login.
      */
     private UserProfileServiceInterface $_userProfileService;
 
     /**
-     * Create a new controller instance.
-     *
-     * @param UserProfileServiceInterface $userProfileService
+     * @param UserProfileServiceInterface $userProfileService Profile persistence and lookup by email.
      */
     public function __construct(UserProfileServiceInterface $userProfileService)
     {
@@ -40,8 +32,9 @@ class AuthController extends Controller
     }
 
     /**
-     * @param RegistrationRequest $request
-     * @return JsonResponse
+     * Registers a user + minimal profile, issues a JWT via the `auth()` helper, returns `201` with token metadata.
+     *
+     * @return JsonResponse JSON containing `data` (profile resource), `token`, `token_type`, `expires_in`.
      */
     public function register(RegistrationRequest $request): JsonResponse
     {
@@ -64,10 +57,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle user login and return a JWT token.
+     * Validates credentials; on success returns JWT plus {@see UserProfileResource}, or `401` / `404` when unusable.
      *
-     * @param LoginRequest $request
-     * @return JsonResponse
+     * @return JsonResponse Token envelope with `user_profile`, or error payload.
      */
     public function login(LoginRequest $request): JsonResponse
     {

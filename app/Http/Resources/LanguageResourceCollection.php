@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
- * Paginated or listed categories wrapped with {@see InterestCategoryResource}.
+ * Collection envelope for languages using {@see LanguageResource}.
  */
-class InterestCategoryResourceCollection extends ResourceCollection
+class LanguageResourceCollection extends ResourceCollection
 {
     /**
      * @return array<int|string, mixed>

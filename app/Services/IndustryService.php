@@ -5,17 +5,18 @@ namespace App\Services;
 use App\Repositories\Contracts\IndustryRepositoryInterface;
 use App\Services\Contracts\IndustryServiceInterface;
 
+/**
+ * Lists {@see \App\Models\Industry} records through {@see IndustryRepositoryInterface}.
+ */
 class IndustryService extends BaseService implements IndustryServiceInterface
 {
     /**
-     * @var IndustryRepositoryInterface
+     * Same repository reference as {@see BaseService::$repository}, retained for explicit typing in this service.
      */
     protected IndustryRepositoryInterface $repo;
 
     /**
-     * IndustryService Constructor.
-     *
-     * @param IndustryRepositoryInterface
+     * @param IndustryRepositoryInterface $repo Industry aggregate repository.
      */
     public function __construct(IndustryRepositoryInterface $repo)
     {

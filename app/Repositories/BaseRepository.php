@@ -7,18 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\BaseRepositoryInterface;
 
 /**
- * Class BaseRepository
- *
- * @package App\Repositories
+ * Generic Eloquent-backed persistence helpers shared by concrete repositories.
  */
 class BaseRepository implements BaseRepositoryInterface
 {
     protected Model $model;
 
     /**
-     * BaseRepository constructor.
-     *
-     * @param Model $model
+     * @param Model $model Root model class this repository operates on.
      */
     public function __construct(Model $model)
     {
@@ -26,8 +22,7 @@ class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Get all records from the repository.
-     * @return Collection
+     * @return Collection<int, Model>
      */
     public function all(): Collection
     {
@@ -35,9 +30,7 @@ class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Find a record by its ID.
-     * @param int $id
-     * @return Model
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException When no row matches primary key.
      */
     public function find(int $id): Model
     {
@@ -45,9 +38,7 @@ class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Create a new record in the repository.
-     * @param array $data
-     * @return Model
+     * @return Model Fresh model instance after insert.
      */
     public function create(array $data): Model
     {
@@ -55,10 +46,7 @@ class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Update a record in the repository.
-     * @param int $id
-     * @param array $data
-     * @return Model|null
+     * @return Model|null Updated model when found; otherwise null after {@see find} fails internally.
      */
     public function update(int $id, array $data): ?Model
     {
@@ -72,9 +60,7 @@ class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Delete a record from the repository.
-     * @param int $id
-     * @return bool
+     * @return bool Whether Eloquent reported a successful delete.
      */
     public function delete(int $id)
     {

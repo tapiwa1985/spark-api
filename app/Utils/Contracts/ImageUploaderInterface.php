@@ -2,13 +2,11 @@
 
 namespace App\Utils\Contracts;
 
-use Illuminate\Support\Facades\File;
-
 interface ImageUploaderInterface
 {
     /**
-     * @param File
-     * @return string|null
+     * @param \Illuminate\Http\UploadedFile|\SplFileInfo $file Readable upload or temp path consumed by the implementation.
+     * @return string|null                               Public URL of the stored object, or null when upload cannot complete.
      */
     public function uploadImage($file): ?string;
 }

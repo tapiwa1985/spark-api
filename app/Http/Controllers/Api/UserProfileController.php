@@ -195,4 +195,15 @@ class UserProfileController extends Controller
 
         return new UserProfileResource($updatedProfile->fresh(['user', 'industry']));
     }
+
+    public function addLanguages(Request $request): UserProfileResource
+    {
+        $data = $request->only('language_ids');
+        $userProfile = auth()->user()->userProfile;
+        Gate::authorize('update', $userProfile);
+
+        $userProfile = $this->_userProfileService->addLanguages($userProfile, $data['language_ids']);
+
+        return new UserProfileResource($userProfile);
+    }
 }

@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
 /**
- * Class UserRepository
- * @package App\Repositories
+ * {@see User} persistence with specialized finders for email and LinkedIn identity.
  */
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -18,9 +17,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     protected Model $model;
 
     /**
-     * UserRepository constrictor
-     *
-     * @param User $model
+     * @param User $model Auth user root model.
      */
     public function __construct(User $model)
     {
@@ -30,10 +27,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Find a user by their email address.
-     *
-     * @param string $email
-     * @return Model|null
+     * @return Model|null First user row matching email, if any.
      */
     public function findByEmail(string $email): ?Model
     {
@@ -41,10 +35,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * Find a user by their LinkedIn ID.
-     *
-     * @param string $linkedinId
-     * @return Model|null
+     * @return Model|null User with eager-loaded `userProfile` when LinkedIn id matches.
      */
     public function findByLinkedInId(string $linkedinId): ?Model
     {

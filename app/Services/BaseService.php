@@ -7,17 +7,18 @@ use App\Repositories\Contracts\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
+/**
+ * Thin orchestration layer over a {@see BaseRepositoryInterface} for generic CRUD delegating to Eloquent.
+ */
 class BaseService implements BaseServiceInterface
 {
     /**
-     * @var BaseRepositoryInterface $repository
+     * Primary persistence abstraction for this service (typically one aggregate root).
      */
     protected BaseRepositoryInterface $repository;
 
     /**
-     * BaserService constructor
-     *
-     * @param BaseRepositoryInterface $repository
+     * @param BaseRepositoryInterface $repository Concrete repository injected by subtype constructors.
      */
     public function __construct(BaseRepositoryInterface $repository)
     {
@@ -25,8 +26,7 @@ class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param array $data
-     * @return Model
+     * @return Model Newly persisted model instance from the backing repository.
      */
     public function create(array $data): Model
     {
@@ -34,7 +34,7 @@ class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, Model> All rows for the bound model type.
      */
     public function all(): Collection
     {
@@ -42,8 +42,7 @@ class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param int $id
-     * @return Model|null
+     * @return Model|null Single row when present; repositories may throw instead of returning null.
      */
     public function find(int $id): ?Model
     {
@@ -51,9 +50,7 @@ class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param int $id
-     * @param array $data
-     * @return Model|null
+     * @return Model|null Updated model when the underlying row existed.
      */
     public function update(int $id, array $data): ?Model
     {
@@ -61,8 +58,7 @@ class BaseService implements BaseServiceInterface
     }
 
     /**
-     * @param int $id
-     * @return bool
+     * @return bool Whether the repository reported a successful delete.
      */
     public function delete(int $id): bool
     {

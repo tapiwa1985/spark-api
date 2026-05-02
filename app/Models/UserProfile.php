@@ -65,4 +65,9 @@ class UserProfile extends Model
     {
         return $this->belongsToMany(Interest::class, 'interest_user_profile', 'user_profile_id', 'interest_id');
     }
+
+    public function languages(): BelongsToMany
+    {
+        return $this->belongsToMany(Language::class, 'language_user_profile', 'user_profile_id', 'language_id');
+    }
 }

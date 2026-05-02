@@ -6,6 +6,9 @@ use App\Models\Industry;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\IndustryRepositoryInterface;
 
+/**
+ * Simple CRUD over {@see Industry} taxonomy rows.
+ */
 class IndustryRepository extends BaseRepository implements IndustryRepositoryInterface
 {
     /**
@@ -14,9 +17,7 @@ class IndustryRepository extends BaseRepository implements IndustryRepositoryInt
     protected Model $model;
 
     /**
-     * IndustryRepository constructor.
-     *
-     * @param Industry
+     * @param Industry $model Industry root model.
      */
     public function __construct(Industry $model)
     {

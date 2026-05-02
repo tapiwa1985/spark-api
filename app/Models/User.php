@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['name', 'email', 'password', 'linkedin_id', 'linkedin_token', 'linkedin_refresh_token'])]
 #[Hidden(['password', 'remember_token'])]
+/**
+ * Authenticatable account with optional LinkedIn OAuth fields and a single {@see UserProfile}.
+ */
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
@@ -21,8 +24,6 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -34,9 +35,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getJWTIdentifier()
     {
@@ -44,15 +43,18 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
+     * {@inheritdoc}
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getJWTCustomClaims()
     {
         return [];
     }
 
+    /**
+     * One extended dating profile row keyed by `users.id`.
+     */
     public function userProfile(): HasOne
     {
         return $this->hasOne(UserProfile::class);

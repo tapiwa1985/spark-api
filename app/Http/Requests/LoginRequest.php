@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Credential payload for password authentication (`email`, `password`).
+ */
 class LoginRequest extends ApiRequest
 {
     /**

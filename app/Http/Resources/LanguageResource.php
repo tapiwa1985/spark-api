@@ -6,18 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Single {@see \App\Models\Industry} row for dropdowns and profile display.
+ * JSON projection for a {@see \App\Models\Language}; defaults to Eloquent array form.
  */
-class IndustryResource extends JsonResource
+class LanguageResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id' => (int)$this->id,
-            'industry_name' => $this->industry_name,
-        ];
+        return parent::toArray($request);
     }
 }

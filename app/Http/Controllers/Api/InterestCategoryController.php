@@ -7,17 +7,20 @@ use Illuminate\Http\Request;
 use App\Http\Resources\InterestCategoryResourceCollection;
 use App\Services\Contracts\InterestCategoryServiceInterface;
 
+/**
+ * Lists interest categories and their interests for onboarding or preference selection UIs.
+ *
+ * @package App\Http\Controllers\Api
+ */
 class InterestCategoryController extends Controller
 {
     /**
-     *  @var InterestCategoryServiceInterface
-     * */
+     * Provides hierarchical interest data (categories with child interests).
+     */
     private InterestCategoryServiceInterface $_service;
 
     /**
-     * InterestCategoryController constructor.
-     *
-     * @param InterestCategoryServiceInterface $service
+     * @param InterestCategoryServiceInterface $service Category listing backed by {@see \App\Repositories\InterestCategoryRepository}.
      */
     public function __construct(InterestCategoryServiceInterface $service)
     {
@@ -25,9 +28,7 @@ class InterestCategoryController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return InterestCategoryResourceCollection
+     * @return InterestCategoryResourceCollection Categories with nested interest payloads.
      */
     public function index(): InterestCategoryResourceCollection
     {

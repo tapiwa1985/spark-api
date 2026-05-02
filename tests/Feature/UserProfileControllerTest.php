@@ -11,6 +11,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\UserProfile;
 use App\Models\Industry;
 use App\Models\Interest;
+use App\Models\Language;
 
 /**
  * Feature tests for the user registration/profile API endpoint.
@@ -425,6 +426,33 @@ class UserProfileControllerTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->json('PATCH', '/api/v1/user-profiles/location', $request)
             ->assertStatus(403);
+    }
+
+    public function testAddLanguagesToUserProfile()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $language1 = Language::factory()->create();
+        $language2 = Language::factory()->create();
+
+        $request = [
+            'language_ids' => [$language1->id, $language2->id],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/languages', $request)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $userProfile->id,
+                    'languages' => [
+                        ['id' => $language1->id, 'language_name' => $language1->language_name],
+                        ['id' => $language2->id, 'language_name' => $language2->language_name],
+                    ],
+                ]
+        ]);
     }
 
 }

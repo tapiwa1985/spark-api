@@ -5,15 +5,13 @@ namespace App\Policies;
 use App\Models\User;
 use App\Models\UserProfile;
 
+/**
+ * Ensures profile mutations apply only to the authenticated member’s own {@see UserProfile} row.
+ */
 class UserProfilePolicy
 {
     /**
-     * Determine if the given user can update the specified user profile.
-      *
-      * @param User $user
-      * @param UserProfile $userProfile
-      *
-      * @return bool
+     * @return bool True when `$user` owns `$userProfile` (matching nested profile id).
      */
     public function update(User $user, UserProfile $userProfile): bool
     {

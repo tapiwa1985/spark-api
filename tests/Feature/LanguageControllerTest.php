@@ -5,17 +5,17 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\Language;
 use App\Models\User;
-use App\Models\Industry;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class IndustryControllerTest extends TestCase
+class LanguageControllerTest extends TestCase
 {
     use RefreshDatabase;
     
-    public function testGetIndustryListAssertStatusOk()
+    public function testGetLAnguageListAssertStatusOk()
     {
-        Industry::factory(10)->create();
+        Language::factory(5)->create();
 
         $user = User::factory()->create();
 
@@ -23,13 +23,15 @@ class IndustryControllerTest extends TestCase
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/industries')
+        ])->get('/api/v1/languages')
             ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     '*' => [
                         'id',
-                        'industry_name',
+                        'language_name',
+                        'native_name',
+                        'code',
                     ]
                 ]
         ]);

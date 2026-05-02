@@ -7,6 +7,9 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Date;
 use Carbon\Carbon;
 
+/**
+ * Sign-up fields including password confirmation and minimum age (`dob` before 18 years ago).
+ */
 class RegistrationRequest extends ApiRequest
 {
     /**

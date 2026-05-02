@@ -77,4 +77,14 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
 
         return $userProfile->fresh('interests');
     }
+
+    /**
+     * Add language IDs to the profile pivot without removing existing languages.
+     */
+    public function addLanguages(UserProfile $userProfile, array $languageIds): UserProfile
+    {
+        $userProfile->languages()->syncWithoutDetaching($languageIds);
+
+        return $userProfile->fresh('languages');
+    }
 }

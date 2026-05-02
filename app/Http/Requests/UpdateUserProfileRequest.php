@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Partial profile update for job title, industry foreign key, and gender enumeration.
+ */
 class UpdateUserProfileRequest extends ApiRequest
 {
     /**

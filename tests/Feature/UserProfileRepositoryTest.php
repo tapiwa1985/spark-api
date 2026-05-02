@@ -11,6 +11,7 @@ use App\Models\UserProfile;
 use App\Models\Industry;
 use App\Models\Interest;
 use Clickbar\Magellan\Data\Geometries\Point;
+use App\Models\Language;
 
 /**
  * Feature tests for user profile repository behavior.
@@ -164,5 +165,22 @@ class UserProfileRepositoryTest extends TestCase
         ]);
 
         $this->assertInstanceOf(Point::class, $result->location);
+    }
+
+    public function testAddLanguagesToProfile()
+    {
+        $languages = Language::factory(5)->create();
+
+        $userProfile = UserProfile::factory()->create();
+        $userProfile->languages()->attach($languages);
+
+        $this->assertCount(5, $userProfile->languages);
+        foreach($languages as $language) {
+            $this->assertTrue($userProfile->languages->contains($language));
+            $this->assertDatabaseHas('language_user_profile', [
+                'user_profile_id' => $userProfile->id,
+                'language_id' => $language->id,
+            ]);
+        }
     }
 }
