@@ -455,4 +455,62 @@ class UserProfileControllerTest extends TestCase
         ]);
     }
 
+    public function testAddLanguagesWhenLanguageIdsIsEmptyAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'language_ids' => '',
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/languages', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'language_ids' => ['The language ids field is required.']
+                ]
+            ]);
+    }
+
+    public function testAddLanguagesWhenLanguageIdsIsNotValidAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'language_ids' => [9000, 800000],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/languages', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'language_ids.0' => ['The selected language_ids.0 is invalid.'],
+                    'language_ids.1' => ['The selected language_ids.1 is invalid.'],
+                ]
+            ]);
+    }
+
+    public function testAddLanguagesWhenUserDoesNotOwnProfileAssertForbidden()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $language1 = Language::factory()->create();
+        $language2 = Language::factory()->create();
+
+        $request = [
+            'language_ids' => [$language1->id, $language2->id],
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PUT', '/api/v1/user-profiles/languages', $request)
+            ->assertStatus(403);
+    }
 }

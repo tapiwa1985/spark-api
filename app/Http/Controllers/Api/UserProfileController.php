@@ -17,6 +17,7 @@ use App\Http\Requests\UploadProfileImageRequest;
 use Illuminate\Support\Facades\Storage;
 use Clickbar\Magellan\Data\Geometries\Point;
 use App\Http\Requests\UpdateUserLocationRequest;
+use App\Http\Requests\AddLanguagesRequest;
 
 /**
  * Authenticated API actions for the signed-in user’s {@see \App\Models\UserProfile}: core fields, interests, bio,
@@ -196,7 +197,13 @@ class UserProfileController extends Controller
         return new UserProfileResource($updatedProfile->fresh(['user', 'industry']));
     }
 
-    public function addLanguages(Request $request): UserProfileResource
+    /**
+     * Add languages to user profile.
+     *
+     * @param AddLanguagesRequest $request
+     * @return AddLanguagesRequest
+     */
+    public function addLanguages(AddLanguagesRequest $request): UserProfileResource
     {
         $data = $request->only('language_ids');
         $userProfile = auth()->user()->userProfile;
