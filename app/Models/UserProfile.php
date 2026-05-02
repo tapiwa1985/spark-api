@@ -10,8 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Policies\UserProfilePolicy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Clickbar\Magellan\Data\Geometries\Point;
 
-#[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id', 'profile_picture_url'])]
+/**
+ * Extended profile for a {@see User}: demographics, optional industry, interests pivot, gallery images, and a PostGIS geography {@see Point} for the `location` attribute.
+ */
+#[Fillable(['user_id', 'bio', 'dob', 'gender', 'job_title', 'industry_id', 'location'])]
 #[UsePolicy(UserProfilePolicy::class)]
 class UserProfile extends Model
 {
@@ -19,7 +23,19 @@ class UserProfile extends Model
     use HasFactory;
 
     /**
-     * @return BelongTo
+     * {@inheritdoc}
+     *
+     * @return array<string, class-string|string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'location' => Point::class,
+        ];
+    }
+
+    /**
+     * Owning user account (one profile per user).
      */
     public function user(): BelongsTo
     {
@@ -27,7 +43,7 @@ class UserProfile extends Model
     }
 
     /**
-     * @return HasMany
+     * Ordered gallery images stored for this profile (each row holds URL on object storage and display flags).
      */
     public function profileImages(): HasMany
     {
@@ -35,7 +51,7 @@ class UserProfile extends Model
     }
 
     /**
-     * @return BelongsTo
+     * Optional industry taxonomy link for job context.
      */
     public function industry(): BelongsTo
     {
@@ -43,7 +59,7 @@ class UserProfile extends Model
     }
 
     /**
-     * @return BelongsToMany
+     * Interest tags attached through the `interest_user_profile` pivot table.
      */
     public function interests(): BelongsToMany
     {

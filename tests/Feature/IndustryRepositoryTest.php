@@ -29,7 +29,7 @@ class IndustryRepositoryTest extends TestCase
         $result = $this->_industryRepository->all();
 
         $this->assertInstanceOf(Collection::class, $result);
-        $this->assertEquals(11, $result->count());
+        $this->assertEquals(10, $result->count());
         $this->assertInstanceOf(Industry::class, $result->get(0));
     }
 }

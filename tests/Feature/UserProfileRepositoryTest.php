@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\Industry;
 use App\Models\Interest;
+use Clickbar\Magellan\Data\Geometries\Point;
 
 /**
  * Feature tests for user profile repository behavior.
@@ -152,5 +153,16 @@ class UserProfileRepositoryTest extends TestCase
         foreach ($interests as $interest) {
             $this->assertTrue($userProfile->interests->contains($interest));
         }
+    }
+
+    public function testUpdateUserLocation()
+    {
+        $userProfile = UserProfile::factory()->create();
+
+        $result = $this->_userProfileRepository->update($userProfile->id, [
+            'location' =>  Point::makeGeodetic(53.463493, -2.292279)
+        ]);
+
+        $this->assertInstanceOf(Point::class, $result->location);
     }
 }

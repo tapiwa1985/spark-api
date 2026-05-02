@@ -290,4 +290,141 @@ class UserProfileControllerTest extends TestCase
                 ]
         ]);
     }
+
+    public function testUpdateUserProfileLocation()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                     'id' => $userProfile->id,
+                    'job_title' => $userProfile->job_title,
+                    'industry' => [
+                        'id' => $userProfile->industry->id,
+                        'industry_name' => $userProfile->industry->industry_name,
+                    ],
+                    'gender' => $userProfile->gender,
+                    'user' => [
+                        'id' => $userProfile->user->id,
+                        'name' => $userProfile->user->name,
+                        'email' => $userProfile->user->email,
+                    ],
+                    'location' => [
+                        'type' => 'Point',
+                        'coordinates' => [$request['longitude'], $request['latitude']],
+                    ],
+                ]
+            ]);
+    }
+
+    public function testUpdateUserProfileLocationWhenLatitudeIsEmptyAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'latitude' => '',
+            'longitude' => fake()->longitude(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' =>  [
+                    'latitude' => ['The latitude field is required.']
+                ]
+        ]);
+    }
+
+    public function testUpdateUserProfileLocationWhenLatitudeIsNotValidAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'latitude' => -3000,
+            'longitude' => fake()->longitude(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' =>  [
+                    'latitude' => ['The latitude field must be between -90 and 90.']
+                ]
+        ]);
+    }
+
+    public function testUpdateUserProfileLocationWhenLongitudeIsEmptyAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'latitude' => fake()->latitude(),
+            'longitude' => '',
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' =>  [
+                    'longitude' => ['The longitude field is required.']
+                ]
+        ]);
+    }
+
+    public function testUpdateUserProfileWhenLongitudeIsNotValidAssertUnprocessable()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser($userProfile->user);
+
+        $request = [
+            'latitude' => fake()->latitude(),
+            'longitude' => -800000,
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' =>  [
+                    'longitude' => ['The longitude field must be between -180 and 180.']
+                ]
+        ]);
+    }
+
+    public function testUpdateUserProfileLocationWhenUserDoesNotOwnProfileAssertForbidden()
+    {
+        $userProfile = UserProfile::factory()->create();
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $request = [
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('PATCH', '/api/v1/user-profiles/location', $request)
+            ->assertStatus(403);
+    }
+
 }

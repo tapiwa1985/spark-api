@@ -8,11 +8,15 @@ use App\Utils\Contracts\ImageUploaderInterface;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
+/**
+ * Resizes an uploaded file to a fixed cover size, writes it to the `gcs` disk under `profiles/`, and returns the
+ * public URL suitable for image tags. Temporary files under `storage/temp/` are removed in a `finally` block.
+ */
 class ImageUploader implements ImageUploaderInterface
 {
     /**
-     * @param \Illuminate\Http\UploadedFile|\SplFileInfo $file
-     * @return string Permanent public URL for the object (same shape as Storage::disk('gcs')->url()).
+     * @param \Illuminate\Http\UploadedFile|\SplFileInfo $file Raw upload from the request.
+     * @return string|null                                 Public object URL from {@see \Illuminate\Filesystem\FilesystemAdapter::url}, or would have been null if put failed (disk is configured to throw on error).
      */
     public function uploadImage($file): ?string
     {
@@ -37,7 +41,6 @@ class ImageUploader implements ImageUploaderInterface
             $disk = Storage::disk('gcs');
             $disk->put($filename, $contents);
 
-            // Persist a full https URL so clients can use it in <img src> (not just the object path).
             return $disk->url($filename);
         } finally {
             if (File::exists($tempFilePath)) {

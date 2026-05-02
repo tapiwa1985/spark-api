@@ -10,9 +10,7 @@ use App\Services\Contracts\UserProfileServiceInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
 /**
- * Class UserProfileService
- *
- * @package App\Services
+ * Application services around {@see UserProfile}: transactional creation with {@see User}, lookup by email, interest sync, and generic updates via the repository.
  */
 class UserProfileService extends BaseService implements UserProfileServiceInterface
 {
@@ -27,10 +25,8 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     protected UserProfileRepositoryInterface $userProfileRepo;
 
     /**
-     * UserProfileService constructor
-     *
-     * @param UserRepositoryInterface $userRepo
-     * @param UserProfileRepositoryInterface $userProfileRepo
+     * @param UserRepositoryInterface         $userRepo        Used when creating a user + profile together.
+     * @param UserProfileRepositoryInterface    $userProfileRepo Passed to {@see BaseService} as the primary repository for CRUD on profiles.
      */
     public function __construct(UserRepositoryInterface $userRepo, UserProfileRepositoryInterface $userProfileRepo)
     {
@@ -41,10 +37,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     }
 
     /**
-     * Creates a user profle. A profile belongs to a user.
-     *
-     * @param array $data
-     * @return Model
+     * Create a {@see User} and their {@see UserProfile} in one DB transaction (registration-style payload).
      */
     public function create(array $data): Model
     {
@@ -66,10 +59,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     }
 
     /**
-     * Get a profile by user email.
-     *
-     * @param string $email
-     * @return UserProfile|null
+     * Resolve the profile whose owning user has the given email (includes relations as defined on the repository query).
      */
     public function fetchByEmail(string $email): ?UserProfile
     {
@@ -77,11 +67,7 @@ class UserProfileService extends BaseService implements UserProfileServiceInterf
     }
 
     /**
-     * Attach interests to a user profile without detaching existing ones.
-     *
-     * @param int $userProfileId
-     * @param array $interestIds
-     * @return UserProfile
+     * Add interest IDs to the pivot; existing links remain (see {@see \Illuminate\Database\Eloquent\Relations\BelongsToMany::syncWithoutDetaching}).
      */
     public function addInterests(int $userProfileId, array $interestIds): UserProfile
     {

@@ -25,6 +25,11 @@ class ProfileImageRepository extends BaseRepository implements ProfileImageRepos
         $this->model = $model;
     }
 
+    /**
+     * @param int $userProfileId
+     * @param int $profileImageId
+     * @return void
+     */
     public function setDisplayImage(int $userProfileId, int $profileImageId): void
     {
         DB::transaction(function () use ($userProfileId, $profileImageId) {

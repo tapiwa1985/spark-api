@@ -4,10 +4,13 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Binds repository and service interfaces to concrete implementations so controllers resolve typed dependencies from the container.
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register interface → implementation bindings for repositories, domain services, and utilities (e.g. {@see \App\Utils\ImageUploader}).
      */
     public function register(): void
     {
@@ -74,7 +77,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Hook for boot-time configuration; currently unused beyond Laravel defaults.
      */
     public function boot(): void
     {

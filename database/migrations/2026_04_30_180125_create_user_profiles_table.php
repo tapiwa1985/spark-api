@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('gender', ['male','female'])->nullable();
             $table->string('job_title')->nullable();;
             $table->foreignId('industry_id')->nullable()->references('id')->on('industries');
+            $table->magellanPoint('location', 4326)->nullable();
             $table->timestamps();
         });
     }
