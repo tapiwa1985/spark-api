@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\IndustryController;
 use App\Http\Controllers\Api\LinkedInController;
 use App\Http\Controllers\Api\InterestCategoryController;
 use App\Http\Controllers\Api\LanguageController;
+use App\Http\Controllers\Api\LikeController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -23,6 +24,10 @@ Route::prefix('v1')->group(function() {
 
     Route::middleware(['auth'])->group(function() {
         Route::get('languages', [LanguageController::class, 'index']);
+
+        Route::prefix('likes')->group(function() {
+            Route::post('/', [LikeController::class, 'store']);
+        });
 
         Route::prefix('user-profiles')->group(function() {
             Route::put('/', [UserProfileController::class, 'update']);

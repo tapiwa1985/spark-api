@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'email', 'password', 'linkedin_id', 'linkedin_token', 'linkedin_refresh_token'])]
 #[Hidden(['password', 'remember_token'])]
@@ -54,9 +55,21 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * One extended dating profile row keyed by `users.id`.
+     *
+     * @return HasOne
      */
     public function userProfile(): HasOne
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    public function receivedLikes(): HasMany
+    {
+        return $this->hasMany(Like::class, 'liked_user_id');
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class, 'user_id');
     }
 }

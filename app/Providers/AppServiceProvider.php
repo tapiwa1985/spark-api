@@ -84,6 +84,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\LanguageServiceInterface::class,
             \App\Services\LanguageService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\LikeRepositoryInterface::class,
+            \App\Repositories\LikeRepository::class,
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\LikeServiceInterface::class,
+            \App\Services\LikeService::class,
+        );
     }
 
     /**
