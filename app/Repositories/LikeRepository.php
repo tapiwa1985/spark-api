@@ -70,4 +70,12 @@ class LikeRepository extends BaseRepository implements LikeRepositoryInterface
             ])
             ->get();
     }
+
+    public function findMutualLike(int $userId, int $likedUserId): ?Like
+    {
+        return $this->model
+            ->where('liked_user_id', $userId)
+            ->where('user_id', $likedUserId)
+            ->first();
+    }
 }

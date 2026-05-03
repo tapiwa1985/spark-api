@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Models\Like;
 use Illuminate\Support\Collection;
 
 /**
@@ -27,4 +28,6 @@ interface LikeRepositoryInterface extends BaseRepositoryInterface
      * @return Collection A collection of UserProfile models representing users who liked this user
      */
     public function getReceivedLikes(int $userId): Collection;
+
+    public function findMutualLike(int $userId, int $likedUserId): ?Like;
 }
