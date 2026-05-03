@@ -94,6 +94,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\LikeServiceInterface::class,
             \App\Services\LikeService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\MatchRepositoryInterface::class,
+            \App\Repositories\MatchRepository::class,
+        );
     }
 
     /**
