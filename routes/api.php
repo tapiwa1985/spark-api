@@ -26,7 +26,7 @@ Route::prefix('v1')->group(function() {
         Route::get('languages', [LanguageController::class, 'index']);
 
         Route::prefix('likes')->group(function() {
-            Route::post('/', [LikeController::class, 'store']);
+            Route::resource('/', LikeController::class);
         });
 
         Route::prefix('user-profiles')->group(function() {

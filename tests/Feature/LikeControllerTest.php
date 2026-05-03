@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\UserProfile;
 use App\Models\Like;
+use App\Models\Language;
+use App\Models\Interest;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LikeControllerTest extends TestCase
@@ -113,5 +115,63 @@ class LikeControllerTest extends TestCase
                     'liked_user_id' => ['You have already liked this user.']
                 ]
             ]);
+    }
+
+    public function testGetLikesReceivedAssertStatusOk()
+    {
+        $user1Profile = UserProfile::factory()->create();
+        $userProfiles = UserProfile::factory(5)->create();
+        $languages = Language::factory(3)->create();
+        $interests = Interest::factory(3)->create();
+
+        foreach ($userProfiles as $userProfile) {
+            $userProfile->languages()->attach($languages->pluck('id'));
+            $userProfile->interests()->attach($interests->pluck('id'));
+            Like::factory()->create([
+                'user_id' => $userProfile->user->id,
+                'liked_user_id' => $user1Profile->user->id,
+            ]);
+        }
+
+        $token = JWTAuth::fromUser($user1Profile->user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/v1/likes')
+        ->assertStatus(200);
+
+        $response->assertJsonCount(5, 'data');
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'bio',
+                    'dob',
+                    'gender',
+                    'job_title',
+                    'industry' => [
+                        'id',
+                        'industry_name',
+                    ],
+                    'interests' => [
+                        '*' => [
+                            'id',
+                            'interest_name',
+                        ],
+                    ],
+                    'languages' => [
+                        '*' => [
+                            'id',
+                            'language_name',
+                        ],
+                    ],
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                    ],
+                ],
+            ],
+        ]);
     }
 }
