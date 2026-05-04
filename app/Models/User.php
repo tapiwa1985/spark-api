@@ -63,13 +63,33 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UserProfile::class);
     }
 
+    /**
+     * A user has many received likes
+     *
+     * @return HasMany
+     */
     public function receivedLikes(): HasMany
     {
         return $this->hasMany(Like::class, 'liked_user_id');
     }
 
+    /**
+     * A user has many likes
+     *
+     * @return HasMany
+     */
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class, 'user_id');
+    }
+
+    /**
+     * A user has multiple matches
+     *
+     * @return HasMany
+     */
+    public function matches(): HasMany
+    {
+        return $this->hasMany(UserMatch::class, 'user_id');
     }
 }

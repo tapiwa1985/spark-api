@@ -76,6 +76,7 @@ class LikeRepository extends BaseRepository implements LikeRepositoryInterface
         return $this->model
             ->where('liked_user_id', $userId)
             ->where('user_id', $likedUserId)
+            ->where('matched_at', null)
             ->first();
     }
 }
