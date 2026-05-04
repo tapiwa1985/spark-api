@@ -102,6 +102,7 @@ class LikeService implements LikeServiceInterface
                 ]);
 
                 $this->repo->update($mutualLike->id, ['matched_at' => now()]);
+                $mutualLike->refresh();
 
                 return $mutualLike;
             });

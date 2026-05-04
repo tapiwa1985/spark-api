@@ -109,7 +109,10 @@ class LikeControllerTest extends TestCase
         ])->json('POST', '/api/v1/likes', [
             'liked_user_id' => $user2Profile->user->id,
         ])
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertJson([
+                'message' => 'You have a new match.',
+            ]);
 
         $this->assertDatabaseHas('user_matches', [
             'user_id' => $user1Profile->user->id,
