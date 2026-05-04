@@ -11,4 +11,6 @@ class UserMatch extends Model
 {
     /** @use HasFactory<\Database\Factories\UserMatchFactory> */
     use HasFactory;
+
+    const USER_MATCH_STATUS_ACTIVE = 'ACTIVE';
 }
