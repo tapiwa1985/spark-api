@@ -104,6 +104,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\MatchServiceInterface::class,
             \App\Services\MatchService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\ChatMessageRepositoryInterface::class,
+            \App\Repositories\ChatMessageRepository::class,
+        );
     }
 
     /**

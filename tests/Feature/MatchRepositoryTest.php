@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\UserMatch;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Models\ChatMessage;
 use Illuminate\Support\Collection;
 use App\Repositories\Contracts\MatchRepositoryInterface;
 
@@ -69,5 +70,18 @@ class MatchRepositoryTest extends TestCase
         foreach($userProfiles as $userProfile) {
             $this->assertTrue($result->contains($userProfile));
         }
+    }
+
+    public function testGetChatMessagesForMatch()
+    {
+        $match = UserMatch::factory()->create();
+
+        $chatMessages = ChatMessage::factory(5)->create(['user_match_id' => $match->id]);
+
+        $userMatch = $this->_matchRepository->find($match->id);
+
+        $this->assertInstanceOf(Collection::class, $userMatch->chatMessages);
+        $this->assertCount(5, $userMatch->chatMessages);
+        $this->assertInstanceOf(ChatMessage::class, $userMatch->chatMessages->get(0));
     }
 }

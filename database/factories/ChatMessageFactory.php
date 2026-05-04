@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\UserMatch;
 use App\Models\User;
+use App\Models\ChatMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<UserMatch>
+ * @extends Factory<ChatMessage>
  */
-class UserMatchFactory extends Factory
+class ChatMessageFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,8 +19,9 @@ class UserMatchFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->create(),
-            'matched_user_id' => User::factory()->create(0,)
+            'sender_id' => User::factory()->create(),
+            'message' => fake()->sentence(),
+            'read_at' => now()
         ];
     }
 }
