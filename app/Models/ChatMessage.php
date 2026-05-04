@@ -13,12 +13,12 @@ class ChatMessage extends Model
     /** @use HasFactory<\Database\Factories\ChatMessageFactory> */
     use HasFactory;
 
-    public function sender(): BelongsTo 
+    public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    public function userMatch(): BelongsTo 
+    public function userMatch(): BelongsTo
     {
         return $this->belongsTo(UserMatch::class, 'user_match_id');
     }

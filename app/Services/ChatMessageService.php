@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace App\Services;
 
 use App\Repositories\Contracts\ChatMessageRepositoryInterface;
 use App\Services\Contracts\ChatMessageServiceInterface;
 
-class ChatMessageService extends BaseService implements ChatMessageServiceInterface 
+class ChatMessageService extends BaseService implements ChatMessageServiceInterface
 {
     protected ChatMessageRepositoryInterface $chatMessageRepository;
 

@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 namespace App\Repositories\Contracts;
 
-interface ChatMessageRepositoryInterface extends BaseRepositoryInterface 
+interface ChatMessageRepositoryInterface extends BaseRepositoryInterface
 {
 }

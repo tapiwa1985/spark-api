@@ -15,7 +15,7 @@ class UserMatch extends Model
 
     const USER_MATCH_STATUS_ACTIVE = 'ACTIVE';
 
-    public function chatMessages(): HasMany 
+    public function chatMessages(): HasMany
     {
         return $this->hasMany(ChatMessage::class);
     }

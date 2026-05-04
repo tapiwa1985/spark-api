@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\InterestCategoryController;
 use App\Http\Controllers\Api\LanguageController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MatchController;
+use App\Http\Controllers\Api\ChatMessageController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -32,6 +33,10 @@ Route::prefix('v1')->group(function() {
 
         Route::prefix('matches')->group(function() {
             Route::resource('/', MatchController::class);
+        });
+        
+        Route::prefix('chat-messages')->group(function() {
+            Route::resource('/', ChatMessageController::class);
         });
 
         Route::prefix('user-profiles')->group(function() {

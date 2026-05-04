@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 namespace App\Services\Contracts;
 
-interface ChatMessageServiceInterface extends BaseServiceInterface 
+interface ChatMessageServiceInterface extends BaseServiceInterface
 {
 }
