@@ -18,8 +18,7 @@ class LikeUserRequest extends ApiRequest
             'liked_user_id' => [
                 'required',
                 'integer',
-                'exists:users,id',
-                new UniqueLike(auth()->id())
+                'exists:users,id'
             ]
         ];
     }

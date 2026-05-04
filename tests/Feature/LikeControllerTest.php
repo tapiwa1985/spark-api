@@ -93,28 +93,28 @@ class LikeControllerTest extends TestCase
             ]);
     }
 
-    public function testLikeUserWhenUserIsAlreadyLikedAssertStatusUnprocessable()
+    public function testLikeUserWhenMutualLikeExistsAssertMatchCreated()
     {
         $user1Profile = UserProfile::factory()->create();
         $user2Profile = UserProfile::factory()->create();
-        Like::factory()->create([
+        $like = Like::factory()->create([
             'user_id' => $user2Profile->user->id,
             'liked_user_id' => $user1Profile->user->id,
         ]);
 
-        $token = JWTAuth::fromUser($user2Profile->user);
+        $token = JWTAuth::fromUser($user1Profile->user);
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->json('POST', '/api/v1/likes', [
-            'liked_user_id' => $user1Profile->user->id,
+            'liked_user_id' => $user2Profile->user->id,
         ])
-            ->assertStatus(422)
-            ->assertJson([
-                'errors' => [
-                    'liked_user_id' => ['You have already liked this user.']
-                ]
-            ]);
+            ->assertStatus(200);
+
+        $this->assertDatabaseHas('user_matches', [
+            'user_id' => $user1Profile->user->id,
+            'matched_user_id' => $user2Profile->user->id,
+        ]);
     }
 
     public function testGetLikesReceivedAssertStatusOk()

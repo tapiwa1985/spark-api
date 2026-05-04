@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\LikeRepositoryInterface;
 use App\Repositories\Contracts\MatchRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Service class for managing user like operations.
@@ -94,14 +95,16 @@ class LikeService implements LikeServiceInterface
         $mutualLike = $this->repo->findMutualLike($data['user_id'], $data['liked_user_id']);
 
         if ($mutualLike) {
-            $this->matchRepository->create([
-                'user_id' => $data['user_id'],
-                'matched_user_id' => $data['liked_user_id'],
-            ]);
+            return DB::transaction(function () use ($data, $mutualLike) {
+                $this->matchRepository->create([
+                    'user_id' => $data['user_id'],
+                    'matched_user_id' => $data['liked_user_id'],
+                ]);
 
-            $this->repo->update($mutualLike->id, ['matched_at' => now()]);
+                $this->repo->update($mutualLike->id, ['matched_at' => now()]);
 
-            return $mutualLike;
+                return $mutualLike;
+            });
         }
 
         return $this->repo->create($data);
