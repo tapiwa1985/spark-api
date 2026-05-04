@@ -165,7 +165,7 @@ class AuthControllerTest extends TestCase
             'name' => '',
             'email' => fake()->email(),
             'password' => 'StrongP@ssword123#!',
-            'password' => 'StrongP@ssword123#!',
+            'password_confirmation' => 'StrongP@ssword123#!',
             'dob' => fake()->date(),
             'gender' => 'male',
         ];

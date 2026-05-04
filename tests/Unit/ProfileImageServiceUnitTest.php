@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\ProfileImage;
 use App\Repositories\Contracts\ProfileImageRepositoryInterface;
 use App\Services\ProfileImageService;
+use App\Models\UserProfile;
 use Mockery as m;
 
 class ProfileImageServiceUnitTest extends TestCase
