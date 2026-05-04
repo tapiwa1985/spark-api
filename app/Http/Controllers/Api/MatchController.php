@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserMatchResource;
 use App\Services\Contracts\MatchServiceInterface;
 use App\Http\Resources\UserProfileResourceCollection;
 
@@ -44,5 +45,13 @@ class MatchController extends Controller
         $matches = $this->_matchService->fetchMatchesForUser($user->id);
 
         return new UserProfileResourceCollection($matches);
+    }
+
+    public function show(string $userMatchId): UserMatchResource
+    {
+        $match = $this->_matchService->find((int) $userMatchId);
+        $match->loadMissing(['chatMessages.sender']);
+
+        return new UserMatchResource($match);
     }
 }

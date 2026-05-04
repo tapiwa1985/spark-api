@@ -8,6 +8,7 @@ use App\Models\UserMatch;
 use App\Models\UserProfile;
 use App\Services\MatchService;
 use Mockery as m;
+use Illuminate\Support\Collection;
 use App\Repositories\Contracts\MatchRepositoryInterface;
 
 /**
@@ -79,5 +80,37 @@ class MatchServiceUnitTest extends TestCase
         $this->assertNotNull($result);
         $this->assertCount(1, $result);
         $this->assertInstanceOf(UserProfile::class, $result->get(0));
+    }
+
+    public function testGetUserMatchWithChatMessages()
+    {
+        $message = fake()->sentence();
+
+        $userMatchMock = m::mock(UserMatch::class)->makePartial();
+        $userMatchMock->id = 1;
+
+        $chatMessageMock = m::mock(ChatMessage::class)->makePartial();
+        $chatMessageMock->message = $message;
+        $chatMessageMock->sender_id = 1;
+        $chatMessageMock->user_match_id = 1;
+
+        $chatMessages = collect([$chatMessageMock]);
+
+        $userMatchMock->chatMessages = $chatMessages;
+
+        $matchMockRepo = m::mock(MatchRepositoryInterface::class);
+        $matchMockRepo->shouldReceive('find')
+            ->once()
+            ->with($userMatchMock->id)
+            ->andReturn($userMatchMock);
+        
+        $service = new MatchService($matchMockRepo);
+        $result = $service->find($userMatchMock->id);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(Collection::class, $result->chatMessages);
+        $this->assertInstanceOf(UserMatch::class, $result);
+        $this->assertCount(1, $result->chatMessages);
+        $this->assertInstanceOf(ChatMessage::class, $result->chatMessages->get(0));
     }
 }

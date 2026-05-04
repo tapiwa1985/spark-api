@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\CreateChatMessageRequest;
 use App\Services\Contracts\ChatMessageServiceInterface;
+use App\Events\MessageSent;
 
 /**
  * Authenticated API for posting messages on a {@see \App\Models\UserMatch} thread.
@@ -43,6 +44,8 @@ class ChatMessageController extends Controller
         $data['sender_id'] = $userId;
 
         $chatMessage = $this->_chatMessageService->create($data);
+
+        broadcast(new MessageSent($chatMessage))->toOthers();
 
         return (new ChatMessageResource($chatMessage))
             ->response()

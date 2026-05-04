@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
             $table->text('message');
-            $table->foreignId('sender_id')->rerefences('id')->on('users');
+            $table->foreignId('sender_id')->references('id')->on('users');
             $table->foreignId('user_match_id')->references('id')->on('user_matches');
             $table->dateTime('read_at')->nullable();
             $table->timestamps();

@@ -31,9 +31,7 @@ Route::prefix('v1')->group(function() {
             Route::resource('/', LikeController::class);
         });
 
-        Route::prefix('matches')->group(function() {
-            Route::resource('/', MatchController::class);
-        });
+        Route::apiResource('matches', MatchController::class);
         
         Route::prefix('chat-messages')->group(function() {
             Route::resource('/', ChatMessageController::class);
