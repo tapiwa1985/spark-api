@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\LinkedInController;
 use App\Http\Controllers\Api\InterestCategoryController;
 use App\Http\Controllers\Api\LanguageController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MatchController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -27,6 +28,10 @@ Route::prefix('v1')->group(function() {
 
         Route::prefix('likes')->group(function() {
             Route::resource('/', LikeController::class);
+        });
+
+        Route::prefix('matches')->group(function() {
+            Route::resource('/', MatchController::class);
         });
 
         Route::prefix('user-profiles')->group(function() {

@@ -150,6 +150,7 @@ jobs:
         run: |
           psql -c "DROP DATABASE IF EXISTS laravel_test;"
           psql -c "CREATE DATABASE laravel_test;"
+          psql -d laravel_test -c "CREATE EXTENSION IF NOT EXISTS postgis;"
           psql -c "GRANT ALL PRIVILEGES ON DATABASE laravel_test TO laravel_test_user;"
 
       - name: Run migrations
