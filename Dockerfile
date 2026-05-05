@@ -4,6 +4,7 @@ ENV COMPOSER_MEMORY_LIMIT='-1'
 
 RUN apt-get update && \
     apt-get install -y --force-yes --no-install-recommends \
+        libev-dev \
         libmemcached-dev \
         libzip-dev \
         libz-dev \
@@ -29,6 +30,9 @@ RUN docker-php-ext-install soap
 
 # Install for image manipulation
 RUN docker-php-ext-install exif
+
+# Ev event loop for ReactPHP: prevents stream_select FD_SETSIZE crashes (Laravel Reverb).
+RUN pecl install ev && docker-php-ext-enable ev
 
 # Install the PHP pcntl extention
 RUN docker-php-ext-install pcntl

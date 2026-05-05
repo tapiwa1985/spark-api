@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             IndustriesTableSeeder::class,
             InterestsTableSeeder::class,
             LanguagesTableSeeder::class,
+            MatchedTestUsersSeeder::class,
         ]);
     }
 }

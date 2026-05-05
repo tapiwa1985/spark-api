@@ -81,9 +81,25 @@
     <p>Use this page to connect to Reverb, authorize a private channel, subscribe, and send a chat message.</p>
 
     <div class="grid">
+        @php
+            $reverbConnection = config('broadcasting.connections.reverb', []);
+            $reverbHost = data_get($reverbConnection, 'options.host', '127.0.0.1');
+            $reverbPort = (string) data_get($reverbConnection, 'options.port', 8081);
+            $reverbScheme = data_get($reverbConnection, 'options.scheme', 'http');
+            $reverbAppKey = (string) data_get($reverbConnection, 'key', '');
+            $wsScheme = $reverbScheme === 'https' ? 'wss' : 'ws';
+            $wsUrl = sprintf(
+                '%s://%s:%s/app/%s?protocol=7&client=js&version=8.4.0&flash=false',
+                $wsScheme,
+                $reverbHost,
+                $reverbPort,
+                rawurlencode($reverbAppKey)
+            );
+        @endphp
+
         <div>
             <label for="ws-url">WebSocket URL</label>
-            <input id="ws-url" value="ws://localhost:8080/app/local-app-key?protocol=7&client=js&version=8.4.0&flash=false">
+            <input id="ws-url" value="{{ $wsUrl }}">
         </div>
         <div>
             <label for="api-base-url">API Base URL</label>
@@ -178,8 +194,12 @@
         ws = new WebSocket(url);
 
         ws.onopen = () => logLine('WebSocket connected');
-        ws.onerror = (err) => logLine('WebSocket error', { message: err.message || 'unknown' });
-        ws.onclose = () => logLine('WebSocket closed');
+        ws.onerror = () => logLine('WebSocket error (browser hides details; check close code)');
+        ws.onclose = (evt) => logLine('WebSocket closed', {
+            code: evt.code,
+            reason: evt.reason || '(empty)',
+            wasClean: evt.wasClean,
+        });
 
         ws.onmessage = (event) => {
             let payload = null;

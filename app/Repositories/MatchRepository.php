@@ -54,13 +54,26 @@ class MatchRepository extends BaseRepository implements MatchRepositoryInterface
             return collect([]);
         }
 
-        $matchIds = $matches->map(function ($match) use ($userId) {
-            return $match->user_id == $userId
+        /** @var array<int, int> $otherUserIdToMatchId maps matched user's id → user_matches.id */
+        $otherUserIdToMatchId = [];
+        foreach ($matches as $match) {
+            $otherUserId = $match->user_id == $userId
                 ? $match->matched_user_id
                 : $match->user_id;
-        });
+            $otherUserIdToMatchId[(int) $otherUserId] = (int) $match->id;
+        }
 
-        return UserProfile::whereIn('user_id', $matchIds)->get();
+        $profiles = UserProfile::whereIn('user_id', array_keys($otherUserIdToMatchId))->get();
+
+        return $profiles->map(function (UserProfile $profile) use ($otherUserIdToMatchId): ?UserProfile {
+            $matchId = $otherUserIdToMatchId[(int) $profile->user_id] ?? null;
+            if ($matchId === null) {
+                return null;
+            }
+            $profile->setAttribute('user_match_id', $matchId);
+
+            return $profile;
+        })->filter()->values();
     }
 
     /**

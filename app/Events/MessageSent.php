@@ -10,6 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\ChatMessage;
+use App\Http\Resources\ChatMessageResource;
 
 class MessageSent implements ShouldBroadcastNow
 {
@@ -39,6 +40,26 @@ class MessageSent implements ShouldBroadcastNow
     {
         return [
             new PrivateChannel('chat.' . $this->chatMessage->user_match_id),
+        ];
+    }
+
+    /**
+     * Stable name for Pusher / Reverb clients (avoid FQCN backslash variants).
+     */
+    public function broadcastAs(): string
+    {
+        return 'message.sent';
+    }
+
+    /**
+     * Match {@see ChatMessageResource} so clients can parse the same shape as the HTTP API.
+     */
+    public function broadcastWith(): array
+    {
+        $message = $this->chatMessage->loadMissing('sender');
+
+        return [
+            'chatMessage' => (new ChatMessageResource($message))->resolve(),
         ];
     }
 }

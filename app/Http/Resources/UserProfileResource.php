@@ -18,6 +18,10 @@ class UserProfileResource extends JsonResource
     {
         return [
             'id' => (int)$this->id,
+            'user_match_id' => $this->when(
+                array_key_exists('user_match_id', $this->resource->getAttributes()),
+                fn (): int => (int) $this->resource->getAttribute('user_match_id'),
+            ),
             'bio' => $this->bio,
             'dob' => (string)$this->dob,
             'gender' => $this->gender,

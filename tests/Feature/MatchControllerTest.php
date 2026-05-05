@@ -39,6 +39,7 @@ class MatchControllerTest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
+                        'user_match_id',
                         'bio',
                         'dob',
                         'gender',

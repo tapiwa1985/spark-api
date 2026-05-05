@@ -4,11 +4,12 @@ services:
     container_name: api
     ports:
       - "8080:8000"
-      - "8081:8081"
     volumes:
       - .:/app
     working_dir: /app
-    command: bash -c 'php artisan config:cache && php artisan serve --host 0.0.0.0'
+    # Do not cache config in local Docker: a shared volume + config:cache ignores per-service
+    # env (e.g. Reverb’s CACHE_STORE=file), so Reverb kept using the DB cache driver and failed.
+    command: bash -c 'php artisan config:clear && php artisan serve --host 0.0.0.0'
     depends_on:
       - postgres
     links:
@@ -18,6 +19,32 @@ services:
     environment:
       - DB_HOST_MAIN=postgres
       - DB_HOST_TEST=postgres-test
+      # Inside this container, localhost is NOT the Reverb server. Use the compose service name.
+      - REVERB_HOST=reverb
+      - REVERB_PORT=8081
+      - REVERB_SCHEME=http
+    networks:
+      - laravel-network
+
+  reverb:
+    build: .
+    container_name: reverb
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: php artisan reverb:start --host=0.0.0.0 --port=8081
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - app
+    environment:
+      CACHE_STORE: file
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     networks:
       - laravel-network
 

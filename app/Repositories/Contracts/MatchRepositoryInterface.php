@@ -15,13 +15,13 @@ use Illuminate\Support\Collection;
 interface MatchRepositoryInterface extends BaseRepositoryInterface
 {
     /**
-     * Retrieve all active matches for a given user.
+     * Retrieve active mutual matches as the other party’s profiles.
      *
-     * Returns a collection of match records where the given user is either the `user_id`
-     * or the `matched_user_id`, and the match status is active (e.g., `'ACTIVE'`).
+     * Each {@see \App\Models\UserProfile} has `user_match_id` set to the matching
+     * {@see \App\Models\UserMatch} primary key when returned from {@see MatchRepository::getMatchesForUser}.
      *
      * @param int $userId The ID of the authenticated user.
-     * @return Collection Collection of {@see \App\Models\UserMatch} models representing active matches.
+     * @return Collection<int, \App\Models\UserProfile>
      */
     public function getMatchesForUser(int $userId): Collection;
 
