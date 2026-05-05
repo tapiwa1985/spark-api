@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatMessageResource;
+use App\Http\Resources\ChatMessageResourceCollection;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\CreateChatMessageRequest;
 use App\Services\Contracts\ChatMessageServiceInterface;
+use App\Services\Contracts\MatchServiceInterface;
 use App\Events\MessageSent;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\GetChatMessagesRequest;
 
 /**
  * Authenticated API for posting messages on a {@see \App\Models\UserMatch} thread.
@@ -19,23 +23,60 @@ use App\Events\MessageSent;
 class ChatMessageController extends Controller
 {
     /**
-     * Persists chat rows and returns them as {@see ChatMessageResource} JSON.
+     * Domain service for chat message persistence and retrieval.
      */
     private ChatMessageServiceInterface $_chatMessageService;
 
     /**
-     * @param ChatMessageServiceInterface $chatMessageService Domain service for creating {@see \App\Models\ChatMessage} records.
+     * Domain service for match validation and lookup.
      */
-    public function __construct(ChatMessageServiceInterface $chatMessageService)
+    private MatchServiceInterface $_matchService;
+
+    /**
+     * Inject required domain services.
+     *
+     * @param ChatMessageServiceInterface $chatMessageService
+     * @param MatchServiceInterface $matchService
+     */
+    public function __construct(ChatMessageServiceInterface $chatMessageService, MatchServiceInterface $matchService)
     {
         $this->_chatMessageService = $chatMessageService;
+        $this->_matchService = $matchService;
     }
 
     /**
-     * Creates a message for the given `user_match_id`, stamps `sender_id` from the JWT user, and responds with `201 Created`.
+     * Retrieve paginated chat messages for a specific match (conversation).
      *
-     * @param CreateChatMessageRequest $request
-     * @return JsonResponse Single {@see ChatMessageResource} payload (wrapped per Laravel’s resource response conventions).
+     * This method uses a `GetChatMessagesRequest` to validate the `match_id` query parameter.
+     * It then authorizes the authenticated user to view messages for that match via a `Gate` policy.
+     * Finally, it fetches messages from the service and returns them as a resource collection.
+     *
+     * @param GetChatMessagesRequest $request The validated request containing the match ID.
+     * @return ChatMessageResourceCollection A collection of chat message resources (wrapped with pagination metadata).
+     */
+    public function index(GetChatMessagesRequest $request): ChatMessageResourceCollection
+    {
+        $matchId = $request->input('match_id');
+        $userMatch = $this->_matchService->find((int)$matchId);
+        Gate::authorize('getMessages', $userMatch);
+
+        $chatMessages = $this->_chatMessageService->getMessagesForMatch($matchId);
+
+        return new ChatMessageResourceCollection($chatMessages);
+    }
+
+    /**
+     * Create a new chat message and broadcast it to the match participants.
+     *
+     * The method extracts `message` and `user_match_id` from the request, sets `sender_id` to the currently
+     * authenticated user, and persists the message using the chat message service.
+     * After creation, it broadcasts a `MessageSent` event to all other participants (excluding the sender)
+     * via Laravel Reverb/Pusher.
+     *
+     * The response is a `201 Created` with a single `ChatMessageResource` representation.
+     *
+     * @param CreateChatMessageRequest $request The validated request containing the message and match ID.
+     * @return JsonResponse JSON response containing the created message resource.
      */
     public function store(CreateChatMessageRequest $request): JsonResponse
     {

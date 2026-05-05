@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
 use App\Repositories\Contracts\ChatMessageRepositoryInterface;
 use App\Services\Contracts\ChatMessageServiceInterface;
 
@@ -14,5 +15,10 @@ class ChatMessageService extends BaseService implements ChatMessageServiceInterf
         parent::__construct($chatMessageRepository);
 
         $this->chatMessageRepository = $chatMessageRepository;
+    }
+
+    public function getMessagesForMatch(int $userMatchId): Collection
+    {
+        return $this->chatMessageRepository->getMessagesForMatch($userMatchId);
     }
 }
