@@ -113,4 +113,22 @@ class MatchServiceUnitTest extends TestCase
         $this->assertCount(1, $result->chatMessages);
         $this->assertInstanceOf(ChatMessage::class, $result->chatMessages->get(0));
     }
+
+    public function testUnmatchUser()
+    {
+        $userId = 1;
+
+        $message = fake()->sentence();
+
+        $userMatchMock = m::mock(UserMatch::class)->makePartial();
+        $userMatchMock->id = 1;
+
+        $matchMockRepo = m::mock(MatchRepositoryInterface::class);
+        $matchMockRepo->shouldReceive('unmatch')
+            ->once()
+            ->with($userId, $userMatchMock->id);
+        
+        $service = new MatchService($matchMockRepo);
+        $service->unmatch($userId, $userMatchMock->id);
+    }
 }

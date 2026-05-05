@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_match_id')->references('id')->on('user_matches');
             $table->dateTime('read_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

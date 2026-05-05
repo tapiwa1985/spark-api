@@ -85,4 +85,61 @@ class MatchControllerTest extends TestCase
         $response->assertJsonPath('data.chatMessages.0.message', $chatMessage->message);
         $response->assertJsonPath('data.chatMessages.0.sender.id', $user2->id);
     }
+
+    public function testUnmatchUserAssertStatusOk()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $userMatch = UserMatch::factory()->create([
+            'user_id' => $user->id,
+            'matched_user_id' => $user2->id,
+        ]);
+
+        $messages = ChatMessage::factory(5)->create([
+            'user_match_id' => $userMatch->id,
+            'sender_id' => $userMatch->user_id,
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->delete('/api/v1/matches/' . $userMatch->id)
+            ->assertOk();
+
+        $this->assertSoftDeleted($userMatch);
+        $this->assertDatabaseHas('user_matches', [
+            'unmatched_by_user_id' => $userMatch->user_id,
+        ]);
+
+        foreach ($messages as $message) {
+            $this->assertSoftDeleted($message);
+        }
+    }
+
+    public function testUnmatchUserWhenUserIsNotMatchAssertUnprocessable()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $userMatch = UserMatch::factory()->create(
+        [
+            'user_id' => $user->id,
+            'matched_user_id' => $user2->id,
+        ]);
+
+        $messages = ChatMessage::factory(5)->create(
+        [
+            'user_match_id' => $userMatch->id,
+            'sender_id' => $userMatch->user_id,
+        ]);
+
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->delete('/api/v1/matches/' . $userMatch->id)
+            ->assertForbidden();
+    }
 }

@@ -84,4 +84,24 @@ class MatchRepositoryTest extends TestCase
         $this->assertCount(5, $userMatch->chatMessages);
         $this->assertInstanceOf(ChatMessage::class, $userMatch->chatMessages->get(0));
     }
+
+    public function testUnmatchUser()
+    {
+        $match = UserMatch::factory()->create();
+
+        $messages = ChatMessage::factory(5)->create([
+            'user_match_id' => $match->id,
+            'sender_id' => $match->user_id,
+        ]);
+
+        $this->_matchRepository->unmatch($match->user_id, $match->id);
+
+        $this->assertSoftDeleted($match);
+        $this->assertDatabaseHas('user_matches', [
+            'unmatched_by_user_id' => $match->user_id,
+        ]);
+        foreach ($messages as $message) {
+            $this->assertSoftDeleted($message);
+        }
+    }
 }
