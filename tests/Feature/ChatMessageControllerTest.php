@@ -233,7 +233,6 @@ class ChatMessageControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
 
         $token = JWTAuth::fromUser($user);
 
@@ -263,7 +262,6 @@ class ChatMessageControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
 
         $token = JWTAuth::fromUser($user);
 
@@ -293,7 +291,6 @@ class ChatMessageControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
 
         $token = JWTAuth::fromUser(User::factory()->create());
 
@@ -312,5 +309,57 @@ class ChatMessageControllerTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->get('/api/v1/chat-messages?match_id=' . $userMatch->id)
             ->assertStatus(403);
+    }
+
+    public function testUpdateReadStatusAssertStatusOk()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $userMatch = UserMatch::factory()->create([
+            'user_id' => $user->id,
+            'matched_user_id' =>  $user2->id,
+        ]);
+
+        $chatMessage = ChatMessage::factory()->create([
+            'sender_id' => $user->id,
+            'message' => fake()->sentence(),
+            'user_match_id' => $userMatch->id,
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->put('/api/v1/chat-messages/' . $chatMessage->id);
+
+        $response->assertOk();
+        $readAt = $response->json('data.read_at');
+        $this->assertNotNull($readAt);
+        $this->assertNotSame('', $readAt);
+    }
+
+    public function testUpdateReadStatusWhenUserDoesNotOwnMatchAssertForbidden()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $token = JWTAuth::fromUser(User::factory()->create());
+
+        $userMatch = UserMatch::factory()->create([
+            'user_id' => $user->id,
+            'matched_user_id' =>  $user2->id,
+        ]);
+
+        $chatMessage = ChatMessage::factory()->create([
+            'sender_id' => $user->id,
+            'message' => fake()->sentence(),
+            'user_match_id' => $userMatch->id,
+        ]);
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->put('/api/v1/chat-messages/' . $chatMessage->id)
+        ->assertForbidden();
     }
 }

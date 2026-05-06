@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\CreateChatMessageRequest;
 use App\Services\Contracts\ChatMessageServiceInterface;
 use App\Services\Contracts\MatchServiceInterface;
+use App\Events\MessageRead;
 use App\Events\MessageSent;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\GetChatMessagesRequest;
@@ -91,5 +92,20 @@ class ChatMessageController extends Controller
         return (new ChatMessageResource($chatMessage))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    /**
+     * Mark a message as read and broadcast to the other participant on the match channel.
+     */
+    public function update(string $chatMessageId): ChatMessageResource
+    {
+        $chatMessage = $this->_chatMessageService->find((int) $chatMessageId);
+        Gate::authorize('update', $chatMessage);
+
+        $updatedChatMessage = $this->_chatMessageService->updateReadStatus((int) $chatMessageId, []);
+
+        broadcast(new MessageRead($updatedChatMessage))->toOthers();
+
+        return new ChatMessageResource($updatedChatMessage);
     }
 }

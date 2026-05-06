@@ -78,4 +78,17 @@ class ChatMessageRepositoryTest extends TestCase
             $this->assertTrue($result->contains($chatMessage));
         }
     }
+
+    public function testUpdateReadStatus()
+    {
+        $chatMessage = ChatMessage::factory()->create();
+
+        $result = $this->_chatMessageRepository->update($chatMessage->id, ['read_at' => now()]);
+
+        $this->assertInstanceOf(ChatMessage::class, $result);
+        $this->assertEquals($chatMessage->id, $result->id);
+        $this->assertEquals($chatMessage->sender_id, $result->sender_id);
+        $this->assertEquals($result->message, $chatMessage->message);
+        $this->assertNotNull($result->read_at);
+    }
 }

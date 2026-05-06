@@ -34,7 +34,8 @@ Route::prefix('v1')->group(function() {
         Route::apiResource('matches', MatchController::class);
         
         Route::prefix('chat-messages')->group(function() {
-            Route::resource('/', ChatMessageController::class);
+            Route::apiResource('/', ChatMessageController::class);
+            Route::put('/{chatMessageId}', [ChatMessageController::class, 'update']);
         });
 
         Route::prefix('user-profiles')->group(function() {

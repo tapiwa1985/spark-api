@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Mockery as m;
 use App\Models\ChatMessage;
 use App\Models\User;
+use Carbon\Carbon;
 use App\Models\UserMatch;
 use Illuminate\Support\Collection;
 use App\Repositories\Contracts\ChatMessageRepositoryInterface;
@@ -79,5 +80,43 @@ class ChatMessageServiceUnitTest extends TestCase
         foreach($chatMessages as $chatMessage) {
             $this->assertTrue($result->contains($chatMessage));
         }
+    }
+
+    public function testUpdateChatMessageReadStatus()
+    {
+        $message = fake()->sentence();
+
+        $userMatchId = 1;
+        $senderId = 1;
+
+        $chatMessageMock = m::mock(ChatMessage::class)->makePartial();
+        $chatMessageMock->message = $message;
+        $chatMessageMock->sender_id = $senderId;
+        $chatMessageMock->user_match_id = $userMatchId;
+        $chatMessageMock->id = 1;
+
+        $chatMessageRepo = m::mock(ChatMessageRepositoryInterface::class);
+        $chatMessageRepo->shouldReceive('update')
+            ->once()
+            ->with(
+                $chatMessageMock->id,
+                m::on(function (array $payload): bool {
+                    return isset($payload['read_at'])
+                        && $payload['read_at'] instanceof Carbon;
+                })
+            )
+            ->andReturnUsing(function (int $id, array $payload) use ($chatMessageMock) {
+                $chatMessageMock->read_at = $payload['read_at'];
+
+                return $chatMessageMock;
+            });
+
+        $service = new ChatMessageService($chatMessageRepo);
+
+        $result = $service->updateReadStatus($chatMessageMock->id, []);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(ChatMessage::class, $result);
+        $this->assertNotNull($result->read_at);
     }
 }

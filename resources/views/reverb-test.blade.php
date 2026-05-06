@@ -121,6 +121,10 @@
             <label for="message-text">Message</label>
             <input id="message-text" value="Hello from reverb test page">
         </div>
+        <div>
+            <label for="message-id">Message ID (for mark read)</label>
+            <input id="message-id" value="1" placeholder="Chat message id">
+        </div>
     </div>
 
     <div class="actions">
@@ -128,6 +132,7 @@
         <button id="authorize-btn" class="secondary">2) Authorize Channel</button>
         <button id="subscribe-btn" class="secondary">3) Subscribe</button>
         <button id="send-btn">4) Send Message</button>
+        <button id="mark-read-btn" class="secondary">5) Mark message read</button>
         <button id="clear-log-btn" class="secondary">Clear Log</button>
     </div>
 
@@ -148,6 +153,7 @@
     const matchIdInput = document.getElementById('match-id');
     const channelNameInput = document.getElementById('channel-name');
     const messageTextInput = document.getElementById('message-text');
+    const messageIdInput = document.getElementById('message-id');
 
     function logLine(message, data = null) {
         const timestamp = new Date().toISOString();
@@ -219,6 +225,11 @@
 
             if (payload.event === 'pusher:error') {
                 logLine('Pusher error', payload);
+                return;
+            }
+
+            if (payload.event === 'message.read' || payload.event === 'message.sent') {
+                logLine(`Chat event: ${payload.event}`, payload);
                 return;
             }
 
@@ -314,6 +325,31 @@
             logLine('Send message response', { status: response.status, response: json });
         } catch (error) {
             logLine('Send message error', { message: error.message });
+        }
+    });
+
+    document.getElementById('mark-read-btn').addEventListener('click', async () => {
+        const apiBase = apiBaseUrlInput.value.trim().replace(/\/+$/, '');
+        const messageId = Number(messageIdInput.value.trim());
+
+        if (!messageId) {
+            logLine('Mark read requires message id.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBase}/api/v1/chat-messages/${messageId}`, {
+                method: 'PUT',
+                headers: {
+                    ...buildAuthHeaders(),
+                    'Accept': 'application/json',
+                },
+            });
+
+            const json = await response.json().catch(() => ({}));
+            logLine('Mark read response', { status: response.status, response: json });
+        } catch (error) {
+            logLine('Mark read error', { message: error.message });
         }
     });
 

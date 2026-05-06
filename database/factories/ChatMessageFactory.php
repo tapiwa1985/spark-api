@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\UserMatch;
 use App\Models\ChatMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,7 +22,8 @@ class ChatMessageFactory extends Factory
         return [
             'sender_id' => User::factory()->create(),
             'message' => fake()->sentence(),
-            'read_at' => now()
+            'read_at' => null,
+            'user_match_id' => UserMatch::factory()->create()
         ];
     }
 }
