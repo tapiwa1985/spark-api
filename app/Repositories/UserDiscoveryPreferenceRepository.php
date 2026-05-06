@@ -111,4 +111,38 @@ class UserDiscoveryPreferenceRepository extends BaseRepository implements UserDi
             ]);
         }
     }
+
+    /**
+     * Update an existing user discovery preference with its related pivot data.
+     *
+     * This method updates the core preference fields, removes all existing pivot associations
+     * (languages, interests, industries), and recreates them from the provided arrays.
+     *
+     * @param int $userDiscoveryPreferenceId The ID of the preference to update.
+     * @param array $data The data array containing updated attributes and ID lists.
+     * @return Model|null The updated preference model, or null if not found.
+     */
+    public function update(int $userDiscoveryPreferenceId, array $data): ?Model
+    {
+        return DB::transaction(function () use ($userDiscoveryPreferenceId, $data) {
+            $userDiscoveryPreference = parent::update($userDiscoveryPreferenceId, [
+                'min_age' => $data['min_age'],
+                'max_age' => $data['max_age'],
+                'max_distance_radius_km' => $data['max_distance_radius_km'],
+                'gender' => $data['gender'],
+                'user_id' => $data['user_id'],
+                'verified_only' => $data['verified_only']
+            ]);
+
+            DiscoveryPrefLanguage::where('user_discovery_preference_id', $userDiscoveryPreferenceId)->delete();
+            DiscoveryPrefInterest::where('user_discovery_preference_id', $userDiscoveryPreferenceId)->delete();
+            DiscoveryPrefIndustry::where('user_discovery_preference_id', $userDiscoveryPreferenceId)->delete();
+
+            $this->addLanguages($data['languageIds']->toArray(), $userDiscoveryPreferenceId);
+            $this->addInterests($data['interestIds']->toArray(), $userDiscoveryPreferenceId);
+            $this->addIndustries($data['industryIds']->toArray(), $userDiscoveryPreferenceId);
+
+            return $userDiscoveryPreference;
+        });
+    }
 }

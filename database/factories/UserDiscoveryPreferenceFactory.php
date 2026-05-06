@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use App\Models\UserDiscoveryPreference;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,11 @@ class UserDiscoveryPreferenceFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory()->create(),
+            'min_age' => 18,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'female',
         ];
     }
 }
