@@ -14,7 +14,12 @@ class CreateUserDiscoveryPreferenceRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'min_age' => ['required', 'integer', 'min:18']
+            'min_age' => ['required', 'integer', 'min:18'],
+            'max_distance_radius_km' => ['required', 'integer'],
+            'gender' => ['required', 'in:male,female,both'],
+            'interestIds' => ['array', 'min:1'],
+            'languageIds' => ['array', 'min:1'],
+            'industryIds' => ['array', 'min:1']
         ];
     }
 }

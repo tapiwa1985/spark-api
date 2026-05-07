@@ -47,20 +47,43 @@ BEGIN
         SELECT
             u.id AS user_id,
             up.id AS profile_id,
-            up.industry_id
+            up.industry_id,
+            up.dob,
+            up.gender
         FROM users u
         JOIN user_profiles up ON up.user_id = u.id
         WHERE u.id = p_current_user_id
     ),
-    my_interests AS (
-        SELECT iup.interest_id
-        FROM interest_user_profile iup
-        JOIN me ON me.profile_id = iup.user_profile_id
+    prefs AS (
+        SELECT
+            me.user_id,
+            me.profile_id,
+            me.industry_id,
+            me.dob,
+            me.gender,
+            udp.id AS preference_id,
+            udp.min_age,
+            udp.max_age,
+            udp.gender AS preferred_gender,
+            COALESCE(udp.verified_only, FALSE) AS verified_only,
+            COALESCE(udp.max_distance_radius_km::NUMERIC, p_max_distance_km) AS max_distance_km
+        FROM me
+        LEFT JOIN user_discovery_preferences udp ON udp.user_id = me.user_id
     ),
-    my_languages AS (
-        SELECT lup.language_id
-        FROM language_user_profile lup
-        JOIN me ON me.profile_id = lup.user_profile_id
+    pref_interests AS (
+        SELECT dpi.interest_id
+        FROM discovery_pref_interests dpi
+        JOIN prefs p ON p.preference_id = dpi.user_discovery_preference_id
+    ),
+    pref_languages AS (
+        SELECT dpl.language_id
+        FROM discovery_pref_languages dpl
+        JOIN prefs p ON p.preference_id = dpl.user_discovery_preference_id
+    ),
+    pref_industries AS (
+        SELECT dpi.industry_id
+        FROM discovery_pref_industries dpi
+        JOIN prefs p ON p.preference_id = dpi.user_discovery_preference_id
     ),
     candidates AS (
         SELECT
@@ -71,26 +94,50 @@ BEGIN
                 ST_SetSRID(ST_MakePoint(p_current_lng, p_current_lat), 4326)::geography
             ) AS distance_meters
         FROM user_profiles up
-        JOIN me ON TRUE
-        WHERE up.user_id <> me.user_id
+        JOIN users candidate_user ON candidate_user.id = up.user_id
+        JOIN prefs p ON TRUE
+        WHERE up.user_id <> p.user_id
           AND up.location IS NOT NULL
           AND ST_DWithin(
                 up.location::geography,
                 ST_SetSRID(ST_MakePoint(p_current_lng, p_current_lat), 4326)::geography,
-                p_max_distance_km * 1000
+                p.max_distance_km * 1000
+          )
+          AND (
+                p.min_age IS NULL
+                OR (
+                    up.dob IS NOT NULL
+                    AND EXTRACT(YEAR FROM AGE(up.dob)) >= p.min_age
+                )
+          )
+          AND (
+                p.max_age IS NULL
+                OR (
+                    up.dob IS NOT NULL
+                    AND EXTRACT(YEAR FROM AGE(up.dob)) <= p.max_age
+                )
+          )
+          AND (
+                p.preferred_gender IS NULL
+                OR p.preferred_gender = 'both'
+                OR up.gender = p.preferred_gender
+          )
+          AND (
+                p.verified_only = FALSE
+                OR candidate_user.email_verified_at IS NOT NULL
           )
           AND NOT EXISTS (
               SELECT 1
               FROM likes l
-              WHERE l.user_id = me.user_id
+              WHERE l.user_id = p.user_id
                 AND l.liked_user_id = up.user_id
           )
           AND NOT EXISTS (
               SELECT 1
               FROM user_matches um
               WHERE (
-                    (um.user_id = me.user_id AND um.matched_user_id = up.user_id)
-                 OR (um.user_id = up.user_id AND um.matched_user_id = me.user_id)
+                    (um.user_id = p.user_id AND um.matched_user_id = up.user_id)
+                 OR (um.user_id = up.user_id AND um.matched_user_id = p.user_id)
               )
               AND um.status = 'ACTIVE'
           )
@@ -102,27 +149,42 @@ BEGIN
             c.distance_meters,
             COALESCE(si.shared_interests, 0) AS shared_interests,
             COALESCE(sl.shared_languages, 0) AS shared_languages,
-            CASE WHEN up.industry_id = me.industry_id THEN 1 ELSE 0 END AS same_industry,
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM pref_industries pi
+                    WHERE pi.industry_id = up.industry_id
+                ) THEN 1
+                ELSE 0
+            END AS same_industry,
             (
                 (COALESCE(si.shared_interests, 0) * 3.0) +
                 (COALESCE(sl.shared_languages, 0) * 2.0) +
-                (CASE WHEN up.industry_id = me.industry_id THEN 1.5 ELSE 0 END) -
+                (
+                    CASE
+                        WHEN EXISTS (
+                            SELECT 1
+                            FROM pref_industries pi
+                            WHERE pi.industry_id = up.industry_id
+                        ) THEN 1.5
+                        ELSE 0
+                    END
+                ) -
                 (c.distance_meters / 1000.0 * 0.15)
             ) AS match_score
         FROM candidates c
         JOIN user_profiles up ON up.id = c.profile_id
-        JOIN me ON TRUE
         LEFT JOIN LATERAL (
             SELECT COUNT(*)::int AS shared_interests
             FROM interest_user_profile ci
             WHERE ci.user_profile_id = c.profile_id
-              AND ci.interest_id IN (SELECT interest_id FROM my_interests)
+              AND ci.interest_id IN (SELECT interest_id FROM pref_interests)
         ) si ON TRUE
         LEFT JOIN LATERAL (
             SELECT COUNT(*)::int AS shared_languages
             FROM language_user_profile cl
             WHERE cl.user_profile_id = c.profile_id
-              AND cl.language_id IN (SELECT language_id FROM my_languages)
+              AND cl.language_id IN (SELECT language_id FROM pref_languages)
         ) sl ON TRUE
     )
     SELECT
@@ -162,11 +224,11 @@ BEGIN
         SELECT jsonb_agg(
             jsonb_build_object(
                 'id', pi.id,
-                'url', pi.url,
-                'is_display_picture', pi.is_display_picture,
+                'image_url', pi.image_url,
+                'is_display', pi.is_display,
                 'created_at', pi.created_at
             )
-            ORDER BY pi.is_display_picture DESC, pi.id ASC
+            ORDER BY pi.is_display DESC, pi.id ASC
         ) AS images
         FROM profile_images pi
         WHERE pi.user_profile_id = up.id
@@ -189,7 +251,7 @@ BEGIN
         SELECT jsonb_agg(
             DISTINCT jsonb_build_object(
                 'id', l.id,
-                'name', l.name
+                'language_name', l.language_name
             )
         ) AS languages
         FROM language_user_profile lup

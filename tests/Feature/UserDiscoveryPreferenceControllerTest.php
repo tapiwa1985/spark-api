@@ -179,4 +179,334 @@ class UserDiscoveryPreferenceControllerTest extends TestCase
                 ]
             ]);
     }
+
+    public function testCreateUserPreferenceWhenMaxDistanceRadiusIsEmptyAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => '',
+            'gender' => 'female',
+            'verified_only' => true,
+            'interestIds' => $interests->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'max_distance_radius_km' => ['The max distance radius km field is required.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenMaxDistanceRadiusIsStringAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 'invalid',
+            'gender' => 'female',
+            'verified_only' => true,
+            'interestIds' => $interests->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'max_distance_radius_km' => ['The max distance radius km field must be an integer.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenGenderIsEmptyAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => '',
+            'verified_only' => true,
+            'interestIds' => $interests->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'gender' => ['The gender field is required.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenGenderIsNotValidAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'invalid',
+            'verified_only' => true,
+            'interestIds' => $interests->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'gender' => ['The selected gender is invalid.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenInterestIdsIsNotAnArrayAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => '',
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'interestIds' => ['The interest ids field must be an array.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenInterestIdsIsEmptyAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => [],
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'interestIds' => ['The interest ids field must have at least 1 items.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenLanguageIdsIsNotArrayAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => $industries->pluck('id'),
+            'languageIds' => '',
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'languageIds' => ['The language ids field must be an array.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenLanguageIdsIsEmptyAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => $industries->pluck('id'),
+            'languageIds' => [],
+            'industryIds' => $industries->pluck('id'),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'languageIds' => ['The language ids field must have at least 1 items.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenIndustryIdsIsNotArrayAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => $industries->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => 'invalif',
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'industryIds' => ['The industry ids field must be an array.']
+                ]
+            ]);
+    }
+
+    public function testCreateUserPreferenceWhenIndustryIdsIsEmptyAssertUnprocessable()
+    {
+        $user =  User::factory()->create();
+
+        $interests = Interest::factory(4)->create();
+        $languages = Language::factory(4)->create();
+        $industries = Industry::factory(4)->create();
+
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'user_id' => $user->id,
+            'min_age' => 27,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'male',
+            'verified_only' => true,
+            'interestIds' => $industries->pluck('id'),
+            'languageIds' => $languages->pluck('id'),
+            'industryIds' => []
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->json('POST', '/api/v1/user-discovery-preferences', $data)
+            ->assertUnprocessable()
+            ->assertJson([
+                'errors' => [
+                    'industryIds' => ['The industry ids field must have at least 1 items.']
+                ]
+            ]);
+    }
 }
