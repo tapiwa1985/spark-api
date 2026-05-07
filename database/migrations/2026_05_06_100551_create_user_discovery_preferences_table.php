@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_discovery_preferences', function (Blueprint $table) {
             $table->id();
-            $table->integer('min_age');
-            $table->integer('max_age');
+            $table->integer('min_age')->default(18);
+            $table->integer('max_age')->nullable();
             $table->boolean('verified_only')->default(false);
             $table->integer('max_distance_radius_km');
             $table->enum('gender', ['male', 'female', 'both']);

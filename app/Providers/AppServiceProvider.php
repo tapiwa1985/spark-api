@@ -119,6 +119,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\UserDiscoveryPreferenceRepositoryInterface::class,
             \App\Repositories\UserDiscoveryPreferenceRepository::class,
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\UserDiscoveryPreferenceServiceInterface::class,
+            \App\Services\UserDiscoveryPreferenceService::class,
+        );
     }
 
     /**

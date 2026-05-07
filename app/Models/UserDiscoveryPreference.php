@@ -50,7 +50,7 @@ class UserDiscoveryPreference extends Model
      */
     public function discoveryPrefInterests(): HasMany
     {
-        return $this->hasMany(Interest::class);
+        return $this->hasMany(DiscoveryPrefInterest::class);
     }
 
     /**
@@ -62,6 +62,6 @@ class UserDiscoveryPreference extends Model
      */
     public function discoveryPrefIndustries(): HasMany
     {
-        return $this->hasMany(Language::class);
+        return $this->hasMany(DiscoveryPrefIndustry::class);
     }
 }

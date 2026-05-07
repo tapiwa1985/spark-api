@@ -53,9 +53,9 @@ class UserDiscoveryPreferenceRepository extends BaseRepository implements UserDi
                 'verified_only' => $data['verified_only']
             ]);
 
-            $this->addLanguages($data['languageIds']->toArray(), $userDiscoveryPreference->id);
-            $this->addInterests($data['interestIds']->toArray(), $userDiscoveryPreference->id);
-            $this->addIndustries($data['industryIds']->toArray(), $userDiscoveryPreference->id);
+            $this->addLanguages($data['languageIds'], $userDiscoveryPreference->id);
+            $this->addInterests($data['interestIds'], $userDiscoveryPreference->id);
+            $this->addIndustries($data['industryIds'], $userDiscoveryPreference->id);
 
             return $userDiscoveryPreference;
         });

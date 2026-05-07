@@ -59,4 +59,54 @@ class UserDiscoveryPreferenceServiceUnitTest extends TestCase
         $this->assertEquals($result->max_distance_radius_km, $data['max_distance_radius_km']);
         $this->assertEquals($result->gender, $data['gender']);
     }
+
+    public function testUpdateDiscoveryPreferences()
+    {
+        $data = [
+            'user_id' => 1,
+            'min_age' => 18,
+            'max_age' => 35,
+            'max_distance_radius_km' => 50,
+            'gender' => 'female',
+            'verified_only' => true,
+            'interestIds' => [1],
+            'languageIds' => [1],
+            'industryIds' => [1],
+        ];
+
+        $interest = m::mock(Interest::class)->makePartial();
+        $interest->id = 1;
+
+        $language = m::mock(Language::class)->makePartial();
+        $language->id = 1;
+
+        $industry = m::mock(Industry::class)->makePartial();
+        $industry->id = 1;
+
+        $userDiscoveryPreferenceMock = m::mock(UserDiscoveryPreference::class)->makePartial();
+        $userDiscoveryPreferenceMock->id = 1;
+        $userDiscoveryPreferenceMock->user_id = $data['user_id'];
+        $userDiscoveryPreferenceMock->min_age = $data['min_age'];
+        $userDiscoveryPreferenceMock->max_age = $data['max_age'];
+        $userDiscoveryPreferenceMock->max_distance_radius_km = $data['max_distance_radius_km'];
+        $userDiscoveryPreferenceMock->gender = $data['gender'];
+        $userDiscoveryPreferenceMock->verified_ony = $data['verified_only'];
+
+        $repoMock = $this->mock(UserDiscoveryPreferenceRepositoryInterface::class, function ($mock) use($data, $userDiscoveryPreferenceMock) {
+            $mock->shouldReceive('update')
+                ->once()
+                ->with($userDiscoveryPreferenceMock->id, $data)
+                ->andReturn($userDiscoveryPreferenceMock);
+        });
+
+        $service = new UserDiscoveryPreferenceService($repoMock);
+
+        $result = $service->update($userDiscoveryPreferenceMock->id, $data);
+
+        $this->assertInstanceOf(UserDiscoveryPreference::class, $result);
+        $this->assertEquals($result->max_age, $data['max_age']);
+        $this->assertEquals($result->min_age, $data['min_age']);
+        $this->assertEquals($result->max_distance_radius_km, $data['max_distance_radius_km']);
+        $this->assertEquals($result->gender, $data['gender']);
+    }
 }

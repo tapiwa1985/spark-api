@@ -38,9 +38,9 @@ class UserDiscoveryPreferenceRepositoryTest extends TestCase
             'max_distance_radius_km' => 50,
             'gender' => 'female',
             'verified_only' => true,
-            'interestIds' => $interests->pluck('id'),
-            'languageIds' => $languages->pluck('id'),
-            'industryIds' => $industries->pluck('id'),
+            'interestIds' => $interests->pluck('id')->toArray(),
+            'languageIds' => $languages->pluck('id')->toArray(),
+            'industryIds' => $industries->pluck('id')->toArray(),
         ];
 
         $result = $this->_userPreferenceRepository->create($data);
