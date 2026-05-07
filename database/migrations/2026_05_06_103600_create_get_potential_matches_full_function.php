@@ -74,16 +74,31 @@ BEGIN
         SELECT dpi.interest_id
         FROM discovery_pref_interests dpi
         JOIN prefs p ON p.preference_id = dpi.user_discovery_preference_id
+        UNION
+        SELECT iup.interest_id
+        FROM interest_user_profile iup
+        JOIN prefs p ON p.profile_id = iup.user_profile_id
+        WHERE p.preference_id IS NULL
     ),
     pref_languages AS (
         SELECT dpl.language_id
         FROM discovery_pref_languages dpl
         JOIN prefs p ON p.preference_id = dpl.user_discovery_preference_id
+        UNION
+        SELECT lup.language_id
+        FROM language_user_profile lup
+        JOIN prefs p ON p.profile_id = lup.user_profile_id
+        WHERE p.preference_id IS NULL
     ),
     pref_industries AS (
         SELECT dpi.industry_id
         FROM discovery_pref_industries dpi
         JOIN prefs p ON p.preference_id = dpi.user_discovery_preference_id
+        UNION
+        SELECT p.industry_id
+        FROM prefs p
+        WHERE p.preference_id IS NULL
+          AND p.industry_id IS NOT NULL
     ),
     candidates AS (
         SELECT
@@ -171,7 +186,7 @@ BEGIN
                     END
                 ) -
                 (c.distance_meters / 1000.0 * 0.15)
-            ) AS match_score
+            )::NUMERIC AS match_score
         FROM candidates c
         JOIN user_profiles up ON up.id = c.profile_id
         LEFT JOIN LATERAL (

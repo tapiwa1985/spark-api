@@ -120,4 +120,12 @@ class MatchRepository extends BaseRepository implements MatchRepositoryInterface
             $this->delete($userMatch->id);
         });
     }
+
+    public function getPotentialMatches(int $userId, float $lat, float $lng, int $maxDistanceKm = 50, int $limit = 50): array
+    {
+        return DB::select(
+            'SELECT * FROM get_potential_matches_full(?, ?, ?, ?, ?)', 
+            [$userId, $lat, $lng, $maxDistanceKm, $limit]
+        );
+    }
 }

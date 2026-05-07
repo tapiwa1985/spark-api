@@ -37,4 +37,6 @@ interface MatchRepositoryInterface extends BaseRepositoryInterface
      * @return void
      */
     public function unmatch(int $unmatchedByUserId, int $userMatchId): void;
+
+    public function getPotentialMatches(int $userId, float $lat, float $lng, int $maxDistanceKm = 50, int $limit = 50): array;
 }
