@@ -124,6 +124,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\UserDiscoveryPreferenceServiceInterface::class,
             \App\Services\UserDiscoveryPreferenceService::class,
         );
+
+        $this->app->bind(
+            \App\Utils\Contracts\PhoneNumberVerifierInterface::class,
+            \App\Utils\PhoneNumberVerifier::class,
+        );
     }
 
     /**
