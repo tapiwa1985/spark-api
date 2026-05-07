@@ -129,6 +129,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Utils\Contracts\PhoneNumberVerifierInterface::class,
             \App\Utils\PhoneNumberVerifier::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\CuratedMatchesWindowRepositoryInterface::class,
+            \App\Repositories\CuratedMatchesWindowRepository::class,
+        );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\CuratedMatchRepositoryInterface::class,
+            \App\Repositories\CuratedMatchRepository::class,
+        );
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Utils;
 
@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  *
  * @package App\Utils
  */
-class PhoneNumberVerifier implements PhoneNumberVerifierInterface 
+class PhoneNumberVerifier implements PhoneNumberVerifierInterface
 {
     /**
      * The Twilio REST API client instance.
@@ -38,11 +38,11 @@ class PhoneNumberVerifier implements PhoneNumberVerifierInterface
     public function sedCode(string $phoneNumber): string
     {
         $uuid = (string) Str::uuid();
-        
+
         $this->_twilioClient->verify->v2->services(config('twilio.twilio_verify_sid'))
             ->verifications
             ->create($phoneNumber, 'sms');
-        
+
         return $uuid;
     }
 

@@ -121,11 +121,30 @@ class MatchRepository extends BaseRepository implements MatchRepositoryInterface
         });
     }
 
+    /**
+     * Retrieves potential matches for a user based on location and discovery preferences.
+     *
+     * This method calls a database stored procedure/function `get_potential_matches_full`
+     * that calculates and returns users who match the specified user's discovery criteria
+     * within the given geographic radius.
+     *
+     * @param int $userId The unique identifier of the user to find matches for
+     * @param float $lat The latitude coordinate of the user's current location
+     * @param float $lng The longitude coordinate of the user's current location
+     * @param int $maxDistanceKm Maximum distance in kilometers to search for potential matches (default: 50)
+     * @param int $limit Maximum number of potential matches to return (default: 50)
+     *
+     * @return array An array of potential matches containing user profiles and match scores
+     *
+     * @throws \Illuminate\Database\QueryException If the database query execution fails
+     */
     public function getPotentialMatches(int $userId, float $lat, float $lng, int $maxDistanceKm = 50, int $limit = 50): array
     {
-        return DB::select(
-            'SELECT * FROM get_potential_matches_full(?, ?, ?, ?, ?)', 
+        $results = DB::select(
+            'SELECT * FROM get_potential_matches_full(?, ?, ?, ?, ?)',
             [$userId, $lat, $lng, $maxDistanceKm, $limit]
         );
+
+        return $results;
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Utils\Contracts;
 
@@ -10,7 +10,7 @@ namespace App\Utils\Contracts;
  *
  * @package App\Utils\Contracts
  */
-interface PhoneNumberVerifierInterface 
+interface PhoneNumberVerifierInterface
 {
     /**
      * Send a verification code to the specified phone number.
