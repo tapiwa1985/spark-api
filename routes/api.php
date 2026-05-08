@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ChatMessageController;
 use App\Http\Controllers\Api\UserDiscoveryPreferenceController;
 use App\Http\Controllers\Api\CuratedMatchController;
 use App\Http\Controllers\Api\UserRejectionController;
+use App\Http\Controllers\Api\PhoneVerificationController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -45,6 +46,10 @@ Route::prefix('v1')->group(function() {
         Route::prefix('chat-messages')->group(function() {
             Route::apiResource('/', ChatMessageController::class);
             Route::put('/{chatMessageId}', [ChatMessageController::class, 'update']);
+        });
+
+        Route::prefix('phone-verification')->group(function() {
+            Route::post('send-otp', [PhoneVerificationController::class, 'sendVerificationCode']);
         });
 
         Route::prefix('user-profiles')->group(function() {

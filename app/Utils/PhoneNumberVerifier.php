@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use Twilio\Rest\Client;
 use Illuminate\Support\Str;
+use App\Utils\Contracts\PhoneNumberVerifierInterface;
 
 /**
  * Service for sending and verifying SMS verification codes using Twilio Verify.
@@ -26,7 +27,7 @@ class PhoneNumberVerifier implements PhoneNumberVerifierInterface
      */
     public function __construct()
     {
-        $this->_twilioClient = new Client(config('twilio.twilio_account_sid'), config('twilio.twilio_auth_token'));
+        $this->_twilioClient = new Client(config('services.twilio.twilio_account_sid'), config('services.twilio.twilio_auth_token'));
     }
 
     /**
@@ -35,11 +36,11 @@ class PhoneNumberVerifier implements PhoneNumberVerifierInterface
      * @param string $phoneNumber The recipient's phone number in E.164 format.
      * @return string A unique UUID identifying this verification session.
      */
-    public function sedCode(string $phoneNumber): string
+    public function sendCode(string $phoneNumber): string
     {
         $uuid = (string) Str::uuid();
 
-        $this->_twilioClient->verify->v2->services(config('twilio.twilio_verify_sid'))
+        $this->_twilioClient->verify->v2->services(config('services.twilio.twilio_verify_sid'))
             ->verifications
             ->create($phoneNumber, 'sms');
 
@@ -55,7 +56,7 @@ class PhoneNumberVerifier implements PhoneNumberVerifierInterface
      */
     public function verifyCode(string $phoneNumber, string $verificationCode): bool
     {
-        $verificationCheck = $this->_twilioClient->verify->v2->services(config('twilio.twilio_verify_sid'))
+        $verificationCheck = $this->_twilioClient->verify->v2->services(config('services.twilio.twilio_verify_sid'))
             ->verificationChecks
             ->create([
                 'to' => $phoneNumber,

@@ -18,7 +18,7 @@ interface PhoneNumberVerifierInterface
      * @param string $phoneNumber The phone number to send the code to (in E.164 format).
      * @return string A unique identifier for this verification session (e.g., UUID).
      */
-    public function sedCode(string $phoneNumber): string;
+    public function sendCode(string $phoneNumber): string;
 
     /**
      * Verify that the provided code matches the one sent to the phone number.
