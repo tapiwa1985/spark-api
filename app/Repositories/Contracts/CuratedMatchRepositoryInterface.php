@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Contracts;
 
+use Illuminate\Support\Collection;
+
 /**
  * Interface CuratedMatchRepositoryInterface
  *
@@ -12,4 +14,15 @@ namespace App\Repositories\Contracts;
  */
 interface CuratedMatchRepositoryInterface extends BaseRepositoryInterface
 {
+    public function deleteForWindow(int $windowId): int;
+
+    /**
+     * @param array<int, array<string, mixed>> $rows
+     */
+    public function insertRows(array $rows): void;
+
+    /**
+     * @return Collection<int, \App\Models\CuratedMatch>
+     */
+    public function fetchForActiveWindowUserId(int $activeWindowId): Collection;
 }

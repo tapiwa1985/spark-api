@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\UserProfile;
 use App\Repositories\Contracts\UserProfileRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 /**
  * {@see UserProfile} persistence with email lookup across the owning {@see \App\Models\User}.
@@ -29,5 +30,23 @@ class UserProfileRepository extends BaseRepository implements UserProfileReposit
             })
             ->with(['user', 'interests'])
             ->first();
+    }
+
+    public function getCoordinatesForUser(int $userId): ?array
+    {
+        $row = DB::table('user_profiles')
+            ->selectRaw('ST_Y(location::geometry) as latitude, ST_X(location::geometry) as longitude')
+            ->where('user_id', $userId)
+            ->whereNotNull('location')
+            ->first();
+
+        if ($row === null) {
+            return null;
+        }
+
+        return [
+            'latitude' => (float) $row->latitude,
+            'longitude' => (float) $row->longitude,
+        ];
     }
 }

@@ -139,6 +139,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\CuratedMatchRepositoryInterface::class,
             \App\Repositories\CuratedMatchRepository::class,
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\CuratedMatchServiceInterface::class,
+            \App\Services\CuratedMatchService::class,
+        );
     }
 
     /**

@@ -17,4 +17,11 @@ interface UserProfileRepositoryInterface extends BaseRepositoryInterface
      * @return UserProfile|null
      */
     public function findByEmail(string $email): ?UserProfile;
+
+    /**
+     * Return latitude/longitude for a user's stored location.
+     *
+     * @return array{latitude: float, longitude: float}|null
+     */
+    public function getCoordinatesForUser(int $userId): ?array;
 }

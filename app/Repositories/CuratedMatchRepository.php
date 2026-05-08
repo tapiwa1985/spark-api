@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\CuratedMatch;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\CuratedMatchRepositoryInterface;
+use Illuminate\Support\Collection;
 
 /**
  * Class CuratedMatchRepository
@@ -29,5 +30,38 @@ class CuratedMatchRepository extends BaseRepository implements CuratedMatchRepos
     public function __construct(CuratedMatch $model)
     {
         parent::__construct($model);
+    }
+
+    public function deleteForWindow(int $windowId): int
+    {
+        return $this->model
+            ->newQuery()
+            ->where('curated_matches_window_id', $windowId)
+            ->delete();
+    }
+
+    public function insertRows(array $rows): void
+    {
+        if (count($rows) === 0) {
+            return;
+        }
+
+        $this->model->newQuery()->insert($rows);
+    }
+
+    public function fetchForActiveWindowUserId(int $activeWindowId): Collection
+    {
+        return $this->model
+            ->newQuery()
+            ->where('curated_matches_window_id', $activeWindowId)
+            ->with([
+                'user.userProfile.user',
+                'user.userProfile.industry',
+                'user.userProfile.interests',
+                'user.userProfile.languages',
+                'user.userProfile.profileImages',
+            ])
+            ->orderByDesc('rank_score')
+            ->get();
     }
 }

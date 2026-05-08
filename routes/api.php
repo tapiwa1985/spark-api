@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\ChatMessageController;
 use App\Http\Controllers\Api\UserDiscoveryPreferenceController;
+use App\Http\Controllers\Api\CuratedMatchController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -33,6 +34,7 @@ Route::prefix('v1')->group(function() {
         });
 
         Route::apiResource('matches', MatchController::class);
+        Route::get('curated-matches', [CuratedMatchController::class, 'index']);
 
         Route::prefix('user-discovery-preferences')->group(function() {
             Route::resource('/', UserDiscoveryPreferenceController::class);
