@@ -50,6 +50,7 @@ Route::prefix('v1')->group(function() {
 
         Route::prefix('phone-verification')->group(function() {
             Route::post('send-otp', [PhoneVerificationController::class, 'sendVerificationCode']);
+            Route::post('verify-otp', [PhoneVerificationController::class, 'verifyCode']);
         });
 
         Route::prefix('user-profiles')->group(function() {

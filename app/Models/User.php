@@ -13,7 +13,16 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'password', 'linkedin_id', 'linkedin_token', 'linkedin_refresh_token'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'linkedin_id',
+    'linkedin_token',
+    'linkedin_refresh_token',
+    'mobile_phone',
+    'mobile_phone_verified_at',
+])]
 #[Hidden(['password', 'remember_token'])]
 /**
  * Authenticatable account with optional LinkedIn OAuth fields and a single {@see UserProfile}.
