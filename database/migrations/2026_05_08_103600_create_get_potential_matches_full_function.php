@@ -149,6 +149,16 @@ BEGIN
           )
           AND NOT EXISTS (
               SELECT 1
+              FROM user_rejections ur
+              WHERE ur.user_id = p.user_id
+                AND ur.rejected_user_id = up.user_id
+                AND (
+                    ur.expires_at IS NULL
+                    OR ur.expires_at > NOW()
+                )
+          )
+          AND NOT EXISTS (
+              SELECT 1
               FROM user_matches um
               WHERE (
                     (um.user_id = p.user_id AND um.matched_user_id = up.user_id)

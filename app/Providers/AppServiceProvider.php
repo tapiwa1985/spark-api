@@ -144,6 +144,16 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\CuratedMatchServiceInterface::class,
             \App\Services\CuratedMatchService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\UserRejectionRepositoryInterface::class,
+            \App\Repositories\UserRejectionRepository::class,
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\UserRejectionServiceInterface::class,
+            \App\Services\UserRejectionService::class,
+        );
     }
 
     /**
