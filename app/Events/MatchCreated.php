@@ -30,8 +30,8 @@ class MatchCreated implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.'.$this->userMatch->user_id),
-            new PrivateChannel('user.'.$this->userMatch->matched_user_id),
+            new PrivateChannel('user.' . $this->userMatch->user_id),
+            new PrivateChannel('user.' . $this->userMatch->matched_user_id),
         ];
     }
 
