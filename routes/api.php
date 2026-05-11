@@ -39,6 +39,7 @@ Route::prefix('v1')->group(function() {
         Route::apiResource('matches', MatchController::class);
         Route::apiResource('user-rejections', UserRejectionController::class);
         Route::get('curated-matches', [CuratedMatchController::class, 'index']);
+        Route::post('blocked-users', [BlockedUserController::class, 'store']);
         Route::apiResource('blocked-users', BlockedUserController::class);
 
         Route::prefix('user-discovery-preferences')->group(function() {

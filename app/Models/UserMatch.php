@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 
-#[Fillable(['user_id', 'matched_user_id'])]
+#[Fillable(['user_id', 'matched_user_id', 'status', 'unmatched_by_user_id'])]
 #[UsePolicy(UserMatchPolicy::class)]
 class UserMatch extends Model
 {
@@ -22,6 +22,7 @@ class UserMatch extends Model
 
     const USER_MATCH_STATUS_ACTIVE = 'ACTIVE';
     const USER_MATCH_STATUS_UNMATCHED = 'UNMATCHED';
+    const USER_MATCH_STATUS_BLOCKED = 'BLOCKED';
 
     protected $cascadeDeletes = ['chatMessages'];
 

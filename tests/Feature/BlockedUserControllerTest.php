@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\UserMatch;
 use App\Models\UserProfile;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -16,6 +17,11 @@ class BlockedUserControllerTest extends TestCase
         $userProfile = UserProfile::factory()->create();
         $userProfile2 = UserProfile::factory()->create();
 
+        $userMatch = UserMatch::factory()->create([
+            'user_id' => $userProfile->user->id,
+            'matched_user_id' => $userProfile2->user->id,
+        ]);
+
         $token = JWTAuth::fromUser($userProfile->user);
 
         $this->withHeaders([
@@ -23,6 +29,11 @@ class BlockedUserControllerTest extends TestCase
         ])->json('POST', '/api/v1/blocked-users', [
             'blocked_user_id' => $userProfile2->user->id,
         ])->assertStatus(200);
+
+        $this->assertDatabaseHas('user_matches', [
+            'id' => $userMatch->id,
+            'status' => 'BLOCKED',
+        ]);
     }
 
     public function testCreateBlockedUserWhenBlockedUserIdIsEmptyAssertStatusUnprocessable()
