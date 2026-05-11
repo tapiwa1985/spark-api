@@ -77,10 +77,6 @@ class LikeController extends Controller
 
         $like = $this->_likeService->create($data);
 
-        if (!is_null($like->matched_at)) {
-            return response()->json(['message' => 'You have a new match.'], JsonResponse::HTTP_OK);
-        }
-
         return response()->json([], JsonResponse::HTTP_OK);
     }
 }

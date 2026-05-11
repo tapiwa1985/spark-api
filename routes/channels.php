@@ -10,3 +10,7 @@ Broadcast::channel('chat.{matchId}', function ($user, $matchId) {
         })->exists();
 });
 
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+

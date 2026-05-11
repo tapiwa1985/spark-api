@@ -131,13 +131,19 @@ class LikeServiceUnitTest extends TestCase
                 return $at instanceof \DateTimeInterface;
             });
 
+        $userMatch = new UserMatch();
+        $userMatch->id = 999;
+        $userMatch->user_id = $user1Id;
+        $userMatch->matched_user_id = $user2Id;
+        $userMatch->status = UserMatch::USER_MATCH_STATUS_ACTIVE;
+
         $matchRepoMock->shouldReceive('create')
             ->once()
             ->with([
                 'user_id' => $user1Id,
                 'matched_user_id' => $user2Id,
             ])
-            ->andReturn(m::mock(UserMatch::class));
+            ->andReturn($userMatch);
 
         $likeService = new LikeService($likeRepoMock, $matchRepoMock);
 
