@@ -154,6 +154,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Contracts\UserRejectionServiceInterface::class,
             \App\Services\UserRejectionService::class,
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\BlockedUserRepositoryInterface::class,
+            \App\Repositories\BlockedUserRepository::class,
+        );
     }
 
     /**
