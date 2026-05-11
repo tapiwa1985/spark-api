@@ -70,7 +70,6 @@ class BlockedUserController extends Controller
     public function store(BlockUserRequest $request): JsonResponse
     {
         $data = $request->only('blocked_user_id');
-        $blockedUserId = $request->input('blocked_user_id');
         $userId = auth()->user()->id;
 
         $data['user_id'] = $userId;
