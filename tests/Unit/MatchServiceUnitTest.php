@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserMatch;
 use App\Models\UserProfile;
 use App\Services\MatchService;
+use App\Models\ChatMessage;
 use Mockery as m;
 use Illuminate\Support\Collection;
 use App\Repositories\Contracts\MatchRepositoryInterface;
