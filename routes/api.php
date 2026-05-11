@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserDiscoveryPreferenceController;
 use App\Http\Controllers\Api\CuratedMatchController;
 use App\Http\Controllers\Api\UserRejectionController;
 use App\Http\Controllers\Api\PhoneVerificationController;
+use App\Http\Controllers\Api\BlockedUserController;
 
 Route::prefix('v1')->group(function() {
     Route::prefix('auth')->group(function() {
@@ -38,6 +39,7 @@ Route::prefix('v1')->group(function() {
         Route::apiResource('matches', MatchController::class);
         Route::apiResource('user-rejections', UserRejectionController::class);
         Route::get('curated-matches', [CuratedMatchController::class, 'index']);
+        Route::apiResource('blocked-users', BlockedUserController::class);
 
         Route::prefix('user-discovery-preferences')->group(function() {
             Route::resource('/', UserDiscoveryPreferenceController::class);
